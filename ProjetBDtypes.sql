@@ -5,6 +5,7 @@ DROP TABLE client_o;
 DROP TABLE carte_o;
 
 DROP TABLE fournisseur_o;
+drop table ligneticket_o;
 
 DROP TABLE adresse_o;
 
@@ -24,6 +25,7 @@ DROP TYPE factureemise_t FORCE;
 
 DROP TYPE facturerecue_t FORCE;
 
+DROP type  ligneticket_t FORCE;
 DROP TYPE article_t FORCE;
 
 DROP TYPE client_t FORCE;
@@ -36,15 +38,6 @@ DROP TYPE listrefarticles_t FORCE;
 
 DROP TYPE carte_t FORCE;
 
-CREATE OR REPLACE TYPE adresse_t AS OBJECT (
-    pays       VARCHAR2(30),
-    ville      VARCHAR2(60),
-    codepostal VARCHAR2(5),
-    rue        VARCHAR2(100),
-    numero     NUMBER,
-    MAP MEMBER FUNCTION compadresse RETURN VARCHAR2
-);
-/
 
 CREATE OR REPLACE TYPE facturerecue_t
 /
@@ -55,12 +48,32 @@ CREATE OR REPLACE TYPE factureemise_t
 CREATE OR REPLACE TYPE carte_t
 /
 
+CREATE OR REPLACE TYPE adresse_t AS OBJECT (
+    pays       VARCHAR2(30),
+    ville      VARCHAR2(60),
+    codepostal VARCHAR2(5),
+    rue        VARCHAR2(100),
+    numero     NUMBER,
+    MAP MEMBER FUNCTION compadresse RETURN VARCHAR2
+);
+/
+
 CREATE OR REPLACE TYPE article_t AS OBJECT (
+    quantite    NUMBER,
     codebarre VARCHAR2(13),
     nom       VARCHAR(50),
     prix      NUMBER,
     achat     REF facturerecue_t,
     MAP MEMBER FUNCTION comparticle RETURN VARCHAR2
+);
+/
+
+CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
+    parentticket number, 
+    numeroligne number,
+    quantite    NUMBER,
+    article ref article_t,
+    MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2
 );
 /
 
@@ -89,7 +102,7 @@ CREATE OR REPLACE TYPE carte_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE listrefarticles_t AS
-    TABLE OF REF article_t
+    TABLE OF REF ligneticket_t
 /
 
 CREATE OR REPLACE TYPE fournisseur_t AS OBJECT (
@@ -119,22 +132,26 @@ CREATE OR REPLACE TYPE employe_t AS OBJECT (
 );
 /
 
+CREATE OR REPLACE TYPE listrefligneticket_t AS
+    TABLE OF REF ligneticket_t;
+/
+
 CREATE OR REPLACE TYPE ticket_t AS OBJECT (
+    -- ceci est un boolean
+    estvente         NUMBER,
     id               NUMBER,
-    articles         listrefarticles_t,
+    ligneticket         listrefligneticket_t,
     paiement         VARCHAR2(30),
     employeemmetteur REF employe_t,
     dateemission     DATE,
-    ORDER MEMBER FUNCTION compticket (
-           ticket IN ticket_t
-       ) RETURN NUMBER
+    MAP MEMBER FUNCTION compticket RETURN VARCHAR2
 ) NOT FINAL;
 /
 
 CREATE OR REPLACE TYPE factureemise_t UNDER ticket_t (
     client     REF client_t,
     datelimite DATE,
---ceci est un boolean
+    --ceci est un boolean
     payeounon  NUMBER
 );
 /
@@ -142,7 +159,7 @@ CREATE OR REPLACE TYPE factureemise_t UNDER ticket_t (
 CREATE OR REPLACE TYPE facturerecue_t UNDER ticket_t (
     fournisseur REF fournisseur_t,
     datelimite  DATE,
---ceci est un boolean
+    --ceci est un boolean
     payeounon   NUMBER
 );
 /

@@ -1,3 +1,5 @@
+
+
 DROP TABLE employe_o;
 
 DROP TABLE client_o;
@@ -15,6 +17,10 @@ DROP TABLE ticket_o;
 DROP TABLE facturerecue_o;
 
 DROP TABLE factureemise_o;
+
+drop table ligneticket_o;
+
+
 
 CREATE TABLE employe_o OF employe_t (
     CONSTRAINT pk_employe_o_numsecu PRIMARY KEY ( numsecu ),
@@ -57,27 +63,38 @@ CREATE TABLE adresse_o OF adresse_t (
                                           rue,
                                           numero,
                                           pays,
-                                          ville)
+                                          ville )
 )
 /
 
 CREATE TABLE article_o OF article_t (
     CONSTRAINT pk_article_o_codebarre PRIMARY KEY ( codebarre ),
+    CONSTRAINT chk_article_o_quantite CHECK ( quantite >= 0 ),
+    CONSTRAINT nnl_article_o_quantite CHECK ( quantite IS NOT NULL ),
     CONSTRAINT nnl_article_o_nom CHECK ( nom IS NOT NULL ),
     CONSTRAINT nnl_article_o_prix CHECK ( prix IS NOT NULL )
 )
 /
 
+CREATE TABLE ligneticket_o OF ligneticket_t (
+    CONSTRAINT pk_ligneticket PRIMARY KEY ( parentticket,
+                                                         numeroligne ),
+    CONSTRAINT chk_ligneticket_o_quantite CHECK ( quantite > 0 ),
+    CONSTRAINT nnl_ligneticket_o_quantite CHECK ( quantite IS NOT NULL ),
+    CONSTRAINT nnl_ligneticket_o_article CHECK ( article IS NOT NULL )
+);
+/
 CREATE TABLE ticket_o OF ticket_t (
     CONSTRAINT pk_ticket_o_id PRIMARY KEY ( id ),
-    CONSTRAINT nnl_ticket_o_articles CHECK ( articles IS NOT NULL ),
+   CONSTRAINT chk_ticket_o_estvente CHECK ( estvente BETWEEN 0 AND 1 ),
+    CONSTRAINT nnl_ticket_o_ligneticket CHECK ( ligneticket IS NOT NULL ),
     --possible d'avoir un ticket avc une table vide d'article
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),
     CONSTRAINT chk_ticket_o_paiement CHECK ( paiement IN ( 'espece', 'cb', 'cheque', 'autre' ) ),
     CONSTRAINT nnl_ticket_o_employeemmetteur CHECK ( employeemmetteur IS NOT NULL ),
     CONSTRAINT nnl_ticket_o_dateemission CHECK ( dateemission IS NOT NULL )
 )
-NESTED TABLE articles STORE AS tablelistrefticketarticles;
+NESTED TABLE ligneticket STORE AS tablelistrefticketarticles;
 /
 
 CREATE TABLE factureemise_o OF factureemise_t (
@@ -88,6 +105,16 @@ CREATE TABLE factureemise_o OF factureemise_t (
     --PLEASE HELP
     --CONSTRAINT chk_factureemise_o_employeemmetteur CHECK ( employeemmetteur.column_value).job IN ( 'Directeur', 'Responsable' ) )
 )
-NESTED TABLE articles STORE AS tablelistreffactureemisearticles;
+NESTED TABLE ligneticket STORE AS tablelistreffactureemisearticles;
 /
 
+CREATE TABLE facturerecue_o OF facturerecue_t (
+    CONSTRAINT nnl_facturerecue_o_client CHECK ( fournisseur IS NOT NULL ),
+    CONSTRAINT nnl_facturerecue_o_datelimite CHECK ( datelimite IS NOT NULL ),
+    CONSTRAINT nnl_facturerecue_o_payeounon CHECK ( payeounon IS NOT NULL ),
+    CONSTRAINT chk_facturerecue_o_payeounon CHECK ( payeounon IN ( 0, 1 ) )
+    --PLEASE HELP
+    --CONSTRAINT chk_factureemise_o_employeemmetteur CHECK ( employeemmetteur.column_value).job IN ( 'Directeur', 'Responsable' ) )
+)
+NESTED TABLE ligneticket STORE AS tablelistreffacturerecuesarticles;
+/
