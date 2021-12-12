@@ -5,7 +5,8 @@ DROP TABLE client_o;
 DROP TABLE carte_o;
 
 DROP TABLE fournisseur_o;
-drop table ligneticket_o;
+
+DROP TABLE ligneticket_o;
 
 DROP TABLE adresse_o;
 
@@ -17,7 +18,7 @@ DROP TABLE factureemise_o;
 
 DROP TABLE facturerecue_o;
 
-DROP TYPE employe_t FORCE;
+DROP TYPE emplo_t FORCE;
 
 DROP TYPE adresse_t FORCE;
 
@@ -25,7 +26,8 @@ DROP TYPE factureemise_t FORCE;
 
 DROP TYPE facturerecue_t FORCE;
 
-DROP type  ligneticket_t FORCE;
+DROP TYPE ligneticket_t FORCE;
+
 DROP TYPE article_t FORCE;
 
 DROP TYPE client_t FORCE;
@@ -37,7 +39,6 @@ DROP TYPE ticket_t FORCE;
 DROP TYPE listrefarticles_t FORCE;
 
 DROP TYPE carte_t FORCE;
-
 
 CREATE OR REPLACE TYPE facturerecue_t
 /
@@ -59,7 +60,7 @@ CREATE OR REPLACE TYPE adresse_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE article_t AS OBJECT (
-    quantite    NUMBER,
+    quantite  NUMBER,
     codebarre VARCHAR2(13),
     nom       VARCHAR(50),
     prix      NUMBER,
@@ -69,10 +70,10 @@ CREATE OR REPLACE TYPE article_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
-    parentticket number, 
-    numeroligne number,
-    quantite    NUMBER,
-    article ref article_t,
+    parentticket NUMBER,
+    numeroligne  NUMBER,
+    quantite     NUMBER,
+    article      REF article_t,
     MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2
 );
 /
@@ -116,7 +117,7 @@ CREATE OR REPLACE TYPE fournisseur_t AS OBJECT (
 );
 /
 
-CREATE OR REPLACE TYPE employe_t AS OBJECT (
+CREATE OR REPLACE TYPE emplo_t AS OBJECT (
     numsecu   NUMBER,
     nom       VARCHAR2(30),
     prenom    VARCHAR2(30),
@@ -127,22 +128,24 @@ CREATE OR REPLACE TYPE employe_t AS OBJECT (
     salaire   NUMBER,
     cv        CLOB,
     ORDER MEMBER FUNCTION compemploye (
-           emp IN employe_t
+           emp IN emplo_t
        ) RETURN NUMBER
 );
 /
 
 CREATE OR REPLACE TYPE listrefligneticket_t AS
-    TABLE OF REF ligneticket_t;
+    TABLE OF ref
+
+ligneticket_t;
 /
 
 CREATE OR REPLACE TYPE ticket_t AS OBJECT (
     -- ceci est un boolean
     estvente         NUMBER,
     id               NUMBER,
-    ligneticket         listrefligneticket_t,
+    ligneticket      listrefligneticket_t,
     paiement         VARCHAR2(30),
-    employeemmetteur REF employe_t,
+    employeemmetteur REF emplo_t,
     dateemission     DATE,
     MAP MEMBER FUNCTION compticket RETURN VARCHAR2
 ) NOT FINAL;

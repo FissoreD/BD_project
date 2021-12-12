@@ -1,6 +1,4 @@
-
-
-DROP TABLE employe_o;
+DROP TABLE emplo_o;
 
 DROP TABLE client_o;
 
@@ -18,22 +16,20 @@ DROP TABLE facturerecue_o;
 
 DROP TABLE factureemise_o;
 
-drop table ligneticket_o;
+DROP TABLE ligneticket_o;
 
-
-
-CREATE TABLE employe_o OF employe_t (
-    CONSTRAINT pk_employe_o_numsecu PRIMARY KEY ( numsecu ),
-    CONSTRAINT chk_employe_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
+CREATE TABLE emplo_o OF emplo_t (
+    CONSTRAINT pk_emplo_o_numsecu PRIMARY KEY ( numsecu ),
+    CONSTRAINT chk_emplo_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
     --TODO? gerer les differents types de cartes de secu
-    CONSTRAINT nnl_employe_o_nom CHECK ( nom IS NOT NULL ),
-    CONSTRAINT nnl_employe_o_job CHECK ( job IS NOT NULL ),
-    CONSTRAINT chk_employe_o_job CHECK ( job IN ( 'Caissier', 'Polyvalent', 'Responsable', 'Directeur' ) ),
-    CONSTRAINT nnl_employe_o_salaire CHECK ( salaire IS NOT NULL ),
-    CONSTRAINT chk_employe_o_salaire CHECK ( salaire BETWEEN 1500 AND 15000 ),
-    CONSTRAINT nnl_employe_o_naissance CHECK ( naissance IS NOT NULL ),
-    CONSTRAINT nnl_employe_o_embauche CHECK ( embauche IS NOT NULL ),
-    CONSTRAINT chk_employe_o_embauche CHECK ( embauche > naissance )
+    CONSTRAINT nnl_emplo_o_nom CHECK ( nom IS NOT NULL ),
+    CONSTRAINT nnl_emplo_o_job CHECK ( job IS NOT NULL ),
+    CONSTRAINT chk_emplo_o_job CHECK ( job IN ( 'Caissier', 'Polyvalent', 'Responsable', 'Directeur' ) ),
+    CONSTRAINT nnl_emplo_o_salaire CHECK ( salaire IS NOT NULL ),
+    CONSTRAINT chk_emplo_o_salaire CHECK ( salaire BETWEEN 1500 AND 15000 ),
+    CONSTRAINT nnl_emplo_o_naissance CHECK ( naissance IS NOT NULL ),
+    CONSTRAINT nnl_emplo_o_embauche CHECK ( embauche IS NOT NULL ),
+    CONSTRAINT chk_emplo_o_embauche CHECK ( embauche > naissance )
 )
 /
 
@@ -78,15 +74,16 @@ CREATE TABLE article_o OF article_t (
 
 CREATE TABLE ligneticket_o OF ligneticket_t (
     CONSTRAINT pk_ligneticket PRIMARY KEY ( parentticket,
-                                                         numeroligne ),
+                                            numeroligne ),
     CONSTRAINT chk_ligneticket_o_quantite CHECK ( quantite > 0 ),
     CONSTRAINT nnl_ligneticket_o_quantite CHECK ( quantite IS NOT NULL ),
     CONSTRAINT nnl_ligneticket_o_article CHECK ( article IS NOT NULL )
 );
 /
+
 CREATE TABLE ticket_o OF ticket_t (
     CONSTRAINT pk_ticket_o_id PRIMARY KEY ( id ),
-   CONSTRAINT chk_ticket_o_estvente CHECK ( estvente BETWEEN 0 AND 1 ),
+    CONSTRAINT chk_ticket_o_estvente CHECK ( estvente BETWEEN 0 AND 1 ),
     CONSTRAINT nnl_ticket_o_ligneticket CHECK ( ligneticket IS NOT NULL ),
     --possible d'avoir un ticket avc une table vide d'article
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),

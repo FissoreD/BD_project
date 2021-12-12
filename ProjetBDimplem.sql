@@ -52,9 +52,9 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
 END;
 /
 
-CREATE OR REPLACE TYPE BODY employe_t AS
+CREATE OR REPLACE TYPE BODY emplo_t AS
     ORDER MEMBER FUNCTION compemploye (
-        emp IN employe_t
+        emp IN emplo_t
     ) RETURN NUMBER IS
 
         pos1    NUMBER := 0;
@@ -99,12 +99,10 @@ CREATE OR REPLACE TYPE BODY employe_t AS
 END;
 /
 
-
 CREATE OR REPLACE TYPE BODY ticket_t AS
     MAP MEMBER FUNCTION compticket RETURN VARCHAR2 IS
     BEGIN
-        RETURN dateemission
-               || id;
+        RETURN dateemission || id;
     END;
 
 END;

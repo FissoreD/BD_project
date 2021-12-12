@@ -1,4 +1,3 @@
-
 INSERT INTO carte_o VALUES (
     'silver',
     0.4,
