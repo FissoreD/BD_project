@@ -24,7 +24,8 @@ FROM
     carte_o oc
 ORDER BY
     value(oc) DESC;
-
+    
+delete from empl_o;
 DECLARE
     refart1      REF article_t;
     ad1          REF adresse_t;
@@ -62,7 +63,7 @@ BEGIN
     ) RETURNING ref(f) INTO fourn1;
 
     INSERT INTO empl_o e VALUES (
-        1111111111111,
+        111111111111,
         'Dupont',
         'Marcello',
         'Caissier',
@@ -195,13 +196,13 @@ BEGIN
 
     bool := res1.is_valid;
     IF bool THEN
-        dbms_output.put_line('quantit� in ticket '
+        dbms_output.put_line('quantite in ticket '
                              || res1.id
-                             || 'is valid');
+                             || ' is valid');
     ELSE
-        dbms_output.put_line('quantit� in ticket '
+        dbms_output.put_line('quantite in ticket '
                              || res1.id
-                             || 'is invalid');
+                             || ' is invalid');
     END IF;
 
 END;

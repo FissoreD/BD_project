@@ -134,7 +134,7 @@ CREATE OR REPLACE TYPE BODY empl_t AS
 END;
 /
 
-CREATE OR REPLACE TYPE body ticket_t AS
+CREATE OR REPLACE TYPE BODY ticket_t AS
     MAP MEMBER FUNCTION compticket RETURN VARCHAR2 IS
     BEGIN
         RETURN dateemission || id;
@@ -157,34 +157,27 @@ CREATE OR REPLACE TYPE body ticket_t AS
     END;
 
     MEMBER FUNCTION gettotal RETURN NUMBER IS
-        acc           NUMBER := 0;
-        articletemp article_t;
+        accum           NUMBER := 0;
+        articletemp   article_t;
+        quantitetemp  NUMBER;
         listreflignes listrefligneticket_t := ticket_t.getarticles(self.id);
     BEGIN
         FOR i IN listreflignes.first..listreflignes.last LOOP
-            SELECT VALUE deref(ref(a))
-            into articletemp
-            FROM listreflignes(i).article AS a;
-            acc := acc + articletemp.prix;
-        END loop;
-    
-
-    RETURN acc;
-            /*return null;
+        dbms_output.put_line(i);
             SELECT
-                COLLECT(deref(lt.column_value))
+                deref(deref(listreflignes(i)).article),
+                deref(listreflignes(i)).quantite
+            INTO
+                articletemp,
+                quantitetemp
             FROM
-                TABLE (
-                    SELECT
-                        ot.ligneticket
-                    FROM
-                        ticket_o ot
-                    WHERE
-                        ot.id = id1
-                ) lt;*/
-            --select sum(select (article.prix) from table(select value(ligneticket) from ticket_o where id = id)) from ticket_o
-    end;
-    
+                dual;
+
+            accum := accum + articletemp.prix * quantitetemp;
+        END LOOP;
+        RETURN accum;
+    END;
+
     MEMBER PROCEDURE addligneticket (
         ligneticket REF ligneticket_t
     ) IS
@@ -203,7 +196,7 @@ CREATE OR REPLACE TYPE body ticket_t AS
             RAISE;
     END;
 
-    MEMBER PROCEDURE deletelinklisteemployes (
+    MEMBER PROCEDURE deleteligneticket (
         ligneticket REF ligneticket_t
     ) IS
     BEGIN
@@ -223,7 +216,7 @@ CREATE OR REPLACE TYPE body ticket_t AS
             RAISE;
     END;
 
-    MEMBER PROCEDURE updatelinklisteemployes (
+    MEMBER PROCEDURE updateligneticket (
         ligneticket1 REF ligneticket_t,
         ligneticket2 REF ligneticket_t
     ) IS
@@ -246,7 +239,7 @@ CREATE OR REPLACE TYPE body ticket_t AS
             RAISE;
     END;
 
-end;
+END;
 /
 
 CREATE OR REPLACE TYPE BODY factureemise_t AS
@@ -280,7 +273,10 @@ CREATE OR REPLACE TYPE BODY factureemise_t AS
             IF lignes_ticket(i).quantite > article.quantite THEN
                 RETURN false;
             END IF;
-
         END LOOP;
 
         RETURN true;
+    END;
+
+END;
+/
