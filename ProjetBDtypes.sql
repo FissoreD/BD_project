@@ -147,7 +147,21 @@ CREATE OR REPLACE TYPE ticket_t AS OBJECT (
     paiement         VARCHAR2(30),
     employeemmetteur REF emplo_t,
     dateemission     DATE,
-    MAP MEMBER FUNCTION compticket RETURN VARCHAR2
+    MAP MEMBER FUNCTION compticket RETURN VARCHAR2,
+    STATIC FUNCTION getarticles (
+           id1 IN NUMBER
+       ) RETURN listrefligneticket_t,
+    MEMBER FUNCTION gettotal RETURN NUMBER,
+    MEMBER PROCEDURE addligneticket (
+           ligneticket REF ligneticket_t
+       ),
+    MEMBER PROCEDURE deleteligneticket (
+           ligneticket REF ligneticket_t
+       ),
+    MEMBER PROCEDURE updateligneticket (
+           ligneticket1 REF ligneticket_t,
+           ligneticket2 REF ligneticket_t
+       )
 ) NOT FINAL;
 /
 
