@@ -1,4 +1,4 @@
-DROP TABLE emplo_o;
+DROP TABLE empl_o;
 
 DROP TABLE client_o;
 
@@ -18,18 +18,18 @@ DROP TABLE factureemise_o;
 
 DROP TABLE ligneticket_o;
 
-CREATE TABLE emplo_o OF emplo_t (
-    CONSTRAINT pk_emplo_o_numsecu PRIMARY KEY ( numsecu ),
-    CONSTRAINT chk_emplo_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
+CREATE TABLE empl_o OF empl_t (
+    CONSTRAINT pk_empl_o_numsecu PRIMARY KEY ( numsecu ),
+    CONSTRAINT chk_empl_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
     --TODO? gerer les differents types de cartes de secu
-    CONSTRAINT nnl_emplo_o_nom CHECK ( nom IS NOT NULL ),
-    CONSTRAINT nnl_emplo_o_job CHECK ( job IS NOT NULL ),
-    CONSTRAINT chk_emplo_o_job CHECK ( job IN ( 'Caissier', 'Polyvalent', 'Responsable', 'Directeur' ) ),
-    CONSTRAINT nnl_emplo_o_salaire CHECK ( salaire IS NOT NULL ),
-    CONSTRAINT chk_emplo_o_salaire CHECK ( salaire BETWEEN 1500 AND 15000 ),
-    CONSTRAINT nnl_emplo_o_naissance CHECK ( naissance IS NOT NULL ),
-    CONSTRAINT nnl_emplo_o_embauche CHECK ( embauche IS NOT NULL ),
-    CONSTRAINT chk_emplo_o_embauche CHECK ( embauche > naissance )
+    CONSTRAINT nnl_empl_o_nom CHECK ( nom IS NOT NULL ),
+    CONSTRAINT nnl_empl_o_job CHECK ( job IS NOT NULL ),
+    CONSTRAINT chk_empl_o_job CHECK ( job IN ( 'Caissier', 'Polyvalent', 'Responsable', 'Directeur' ) ),
+    CONSTRAINT nnl_empl_o_salaire CHECK ( salaire IS NOT NULL ),
+    CONSTRAINT chk_empl_o_salaire CHECK ( salaire BETWEEN 1500 AND 15000 ),
+    CONSTRAINT nnl_empl_o_naissance CHECK ( naissance IS NOT NULL ),
+    CONSTRAINT nnl_empl_o_embauche CHECK ( embauche IS NOT NULL ),
+    CONSTRAINT chk_empl_o_embauche CHECK ( embauche > naissance )
 )
 /
 
