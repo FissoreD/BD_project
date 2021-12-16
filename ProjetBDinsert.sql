@@ -22,3 +22,4 @@ FROM
     carte_o oc
 ORDER BY
     value(oc) DESC;
+    
