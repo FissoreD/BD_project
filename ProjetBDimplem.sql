@@ -31,11 +31,11 @@ CREATE OR REPLACE TYPE BODY client_t AS
 
     STATIC FUNCTION get_factures_a_encaisser (
         client_id IN NUMBER
-    ) RETURN setfactureemise_t IS
-        res setfactureemise_t;
+    ) RETURN setticket_t IS
+        res setticket_t;
     BEGIN
         SELECT
-            CAST(COLLECT(value(f)) AS setfactureemise_t)
+            CAST(COLLECT(value(f)) AS setticket_t) 
         INTO res
         FROM
             ticket_o f
@@ -66,11 +66,11 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
                || siret;
     END;
 
-    MEMBER FUNCTION get_factures_a_payer RETURN setfacturerecue_t IS
-        res setfacturerecue_t;
+    MEMBER FUNCTION get_factures_a_payer RETURN setticket_t IS
+        res setticket_t;
     BEGIN
         SELECT
-            CAST(COLLECT(value(f)) AS setfacturerecue_t)
+            CAST(COLLECT(value(f)) AS setticket_t)
         INTO res
         FROM
             ticket_o f
@@ -163,9 +163,7 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
         quantitetemp  NUMBER;
         listreflignes listrefligneticket_t := ticket_t.getarticles(self.id);
     BEGIN
-        dbms_output.put_line(3333);
         FOR i IN listreflignes.first..listreflignes.last LOOP
-            dbms_output.put_line(i);
             SELECT
                 deref(deref(listreflignes(i)).article),
                 deref(listreflignes(i)).quantite

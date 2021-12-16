@@ -184,6 +184,10 @@ CREATE OR REPLACE TYPE facturerecue_t UNDER ticket_t (
 );
 /
 
+CREATE OR REPLACE TYPE setticket_t AS
+    TABLE OF ticket_t
+/
+
 CREATE OR REPLACE TYPE setfacturerecue_t AS
     TABLE OF facturerecue_t
 /
@@ -203,7 +207,7 @@ CREATE OR REPLACE TYPE client_t AS OBJECT (
     MAP MEMBER FUNCTION compclient RETURN VARCHAR2,
     STATIC FUNCTION get_factures_a_encaisser (
            client_id IN NUMBER
-       ) RETURN setfactureemise_t
+       ) RETURN setticket_t
 );
 /
 
@@ -215,6 +219,6 @@ CREATE OR REPLACE TYPE fournisseur_t AS OBJECT (
     naissance DATE,
     catalogue listrefarticles_t,
     MAP MEMBER FUNCTION compfournisseur RETURN VARCHAR2,
-    MEMBER FUNCTION get_factures_a_payer RETURN setfacturerecue_t
+    MEMBER FUNCTION get_factures_a_payer RETURN setticket_t
 );
 /

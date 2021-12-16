@@ -1,4 +1,19 @@
-SET SERVEROUTPUT ON;
+SET SERVEROUTPUT ON 
+DELETE FROM adresse_o;
+
+DELETE FROM fournisseur_o;
+
+DELETE FROM ticket_o;
+
+DELETE FROM empl_o;
+
+DELETE FROM client_o;
+
+DELETE FROM ligneticket_o;
+
+DELETE FROM article_o;
+
+DELETE FROM carte_o;
 
 INSERT INTO carte_o VALUES (
     'silver',
@@ -17,15 +32,6 @@ INSERT INTO carte_o VALUES (
     0.2,
     listrefclients_t()
 );
-
-SELECT
-    *
-FROM
-    carte_o oc
-ORDER BY
-    value(oc) DESC;
-
-DELETE FROM empl_o;
 
 DECLARE
     refart1      REF article_t;
@@ -55,7 +61,7 @@ BEGIN
     ) RETURNING ref(ad) INTO ad2;
 
     INSERT INTO fournisseur_o f VALUES (
-        12345,
+        1234,
         'First',
         'Boite',
         ad1,
@@ -64,7 +70,7 @@ BEGIN
     ) RETURNING ref(f) INTO fourn1;
 
     INSERT INTO empl_o e VALUES (
-        1111111111112,
+        1111111111111,
         'Dupont',
         'Marcello',
         'Caissier',
@@ -78,7 +84,7 @@ BEGIN
     INSERT INTO ticket_o o VALUES ( facturerecue_t(1, 0, listrefligneticket_t(), 'autre', NULL,
                                                    TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
                                                    0) ) RETURNING ref(o) INTO fact_recue1;
-/*
+
     INSERT INTO article_o a VALUES (
         0,
         '1111111111111',
@@ -121,18 +127,9 @@ BEGIN
         NULL
     ) RETURNING ref(c) INTO client1;
 
-    INSERT INTO ticket_o VALUES (
-    factureemise_t(
-        1,
-        1,
-        listrefligneticket_t(),
-        'autre',
-        employe1,
-        TO_DATE('22-12-2021', 'DD-MM-YYYY'),
-        client1,
-        TO_DATE('31-12-2021', 'DD-MM-YYYY'),
-        0)
-    );
+    INSERT INTO ticket_o VALUES ( factureemise_t(2, 1, listrefligneticket_t(), 'autre', employe1,
+                                                 TO_DATE('22-12-2021', 'DD-MM-YYYY'), client1, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
+                                                 0) );
 
     INSERT INTO TABLE (
         SELECT
@@ -140,20 +137,19 @@ BEGIN
         FROM
             ticket_o
         WHERE
-            id = 1
+            id = 2
     ) VALUES ( ligne_ticket );
-*/
+
 END;
 /
 
-DESC ticket_o
-/
+--COMMIT;
 
 DECLARE
-    fourn1  fournisseur_t;
-    client1 client_t;
-    res     setfacturerecue_t;
-    res1    setfactureemise_t;
+    fourn1          fournisseur_t;
+    client1         client_t;
+    factures_recues setticket_t;
+    factures_emises setticket_t;
 BEGIN
     SELECT
         value(f)
@@ -163,19 +159,22 @@ BEGIN
     WHERE
         siret = 1234;
 
-    res := fourn1.get_factures_a_payer;
-    res1 := client_t.get_factures_a_encaisser(1);
-    FOR i IN res.first..res.last LOOP
-        dbms_output.put_line('Facture � payer : ' || res(i).id);
+    factures_recues := fourn1.get_factures_a_payer;
+    factures_emises := client_t.get_factures_a_encaisser(1);
+    FOR i IN factures_recues.first..factures_recues.last LOOP
+        dbms_output.put_line('La facture '
+                             || factures_recues(i).id
+                             || ' est a payer');
     END LOOP;
 
-    FOR i IN res1.first..res1.last LOOP
-        dbms_output.put_line('Factures � encaisser : ' || res1(i).id);
+    FOR i IN factures_emises.first..factures_emises.last LOOP
+        dbms_output.put_line('La facture '
+                             || factures_emises(i).id
+                             || ' est a encaisser');
     END LOOP;
 
 END;
 /
-
 DECLARE
     res1         factureemise_t;
     listarticles listrefligneticket_t;
@@ -183,16 +182,16 @@ DECLARE
     bool         BOOLEAN;
 BEGIN
     SELECT
-        value(f)
+        TREAT(value(f) AS factureemise_t)
     INTO res1
     FROM
         ticket_o f
     WHERE
-        id = 1;
-
+        id = 2;
+        
     listarticles := ticket_t.getarticles(1);
-    bool := res1.is_valid;
-    IF bool THEN
+   bool := res1.is_valid;
+    IF true and bool THEN
         dbms_output.put_line('quantite in ticket '
                              || res1.id
                              || ' is valid');
@@ -202,18 +201,6 @@ BEGIN
                              || ' is invalid');
     END IF;
 
-    dbms_output.put_line('prix totale de la facture : ' || res1.gettotal);
+dbms_output.put_line('prix totale de la facture : ' || res1.gettotal);
 END;
 /
-
-SELECT
-    t.column_value.article.prix
-FROM
-    TABLE (
-        SELECT
-            ligneticket
-        FROM
-            ticket_o f
-        WHERE
-            id = 1
-    ) t;
