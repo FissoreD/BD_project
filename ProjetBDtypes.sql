@@ -14,10 +14,6 @@ DROP TABLE article_o;
 
 DROP TABLE ticket_o;
 
-DROP TABLE factureemise_o;
-
-DROP TABLE facturerecue_o;
-
 DROP TYPE empl_t FORCE;
 
 DROP TYPE adresse_t FORCE;
@@ -44,8 +40,7 @@ DROP TYPE setfacturerecue_t FORCE;
 
 DROP TYPE setfactureemise_t FORCE;
 
-drop type listrefligneticket_t force;
-
+DROP TYPE listrefligneticket_t FORCE;
 
 CREATE OR REPLACE TYPE facturerecue_t
 /
@@ -105,9 +100,11 @@ CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
     MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2
 );
 /
-create or replace type setligneticket_t as 
-table of ligneticket_t;
+
+CREATE OR REPLACE TYPE setligneticket_t AS
+    TABLE OF ligneticket_t;
 /
+
 CREATE OR REPLACE TYPE listrefclients_t AS
     TABLE OF REF client_t
 /
@@ -175,7 +172,7 @@ CREATE OR REPLACE TYPE factureemise_t UNDER ticket_t (
     datelimite DATE,
     --ceci est un boolean
     payeounon  NUMBER,
-    member function is_valid return boolean
+    MEMBER FUNCTION is_valid RETURN BOOLEAN
 );
 /
 

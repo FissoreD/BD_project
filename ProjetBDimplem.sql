@@ -38,10 +38,10 @@ CREATE OR REPLACE TYPE BODY client_t AS
             CAST(COLLECT(value(f)) AS setfactureemise_t)
         INTO res
         FROM
-            factureemise_o f
+            ticket_o f
         WHERE
-                deref(client).id = client_id
-            AND payeounon = 0;
+                deref(TREAT(value(f) AS factureemise_t).client).id = client_id
+            AND TREAT(value(f) AS factureemise_t).payeounon = 0;
 
         RETURN res;
     END;
@@ -73,10 +73,10 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
             CAST(COLLECT(value(f)) AS setfacturerecue_t)
         INTO res
         FROM
-            facturerecue_o f
+            ticket_o f
         WHERE
-                deref(fournisseur).siret = self.siret
-            AND payeounon = 0;
+                deref(TREAT(value(f) AS facturerecue_t).fournisseur).siret = self.siret
+            AND TREAT(value(f) AS facturerecue_t).payeounon = 0;
 
         RETURN res;
     EXCEPTION
@@ -157,13 +157,15 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
     END;
 
     MEMBER FUNCTION gettotal RETURN NUMBER IS
-        accum           NUMBER := 0;
+
+        accum         NUMBER := 0;
         articletemp   article_t;
         quantitetemp  NUMBER;
         listreflignes listrefligneticket_t := ticket_t.getarticles(self.id);
     BEGIN
+        dbms_output.put_line(3333);
         FOR i IN listreflignes.first..listreflignes.last LOOP
-        dbms_output.put_line(i);
+            dbms_output.put_line(i);
             SELECT
                 deref(deref(listreflignes(i)).article),
                 deref(listreflignes(i)).quantite
@@ -175,6 +177,7 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
 
             accum := accum + articletemp.prix * quantitetemp;
         END LOOP;
+
         RETURN accum;
     END;
 
@@ -258,7 +261,7 @@ CREATE OR REPLACE TYPE BODY factureemise_t AS
                 SELECT
                     t.ligneticket
                 FROM
-                    factureemise_o t
+                    ticket_o t
                 WHERE
                     t.id = self.id
             ) lre;

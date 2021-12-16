@@ -12,15 +12,11 @@ DROP TABLE article_o;
 
 DROP TABLE ticket_o;
 
-DROP TABLE facturerecue_o;
-
-DROP TABLE factureemise_o;
-
 DROP TABLE ligneticket_o;
 
 CREATE TABLE empl_o OF empl_t (
     CONSTRAINT pk_empl_o_numsecu PRIMARY KEY ( numsecu ),
-    CONSTRAINT chk_empl_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
+    --CONSTRAINT chk_empl_o_numsecu CHECK ( numsecu BETWEEN power(10, 13) AND power(10, 14) - 1 ),
     --TODO? gerer les differents types de cartes de secu
     CONSTRAINT nnl_empl_o_nom CHECK ( nom IS NOT NULL ),
     CONSTRAINT nnl_empl_o_job CHECK ( job IS NOT NULL ),
@@ -89,29 +85,19 @@ CREATE TABLE ticket_o OF ticket_t (
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),
     CONSTRAINT chk_ticket_o_paiement CHECK ( paiement IN ( 'espece', 'cb', 'cheque', 'autre' ) ),
     CONSTRAINT nnl_ticket_o_employeemmetteur CHECK ( employeemmetteur IS NOT NULL ),
-    CONSTRAINT nnl_ticket_o_dateemission CHECK ( dateemission IS NOT NULL )
+    CONSTRAINT nnl_ticket_o_dateemission CHECK ( dateemission IS NOT NULL ),
+    
+    --ajout des contraintes des factures emises
+    CONSTRAINT nnl_factureemise_o_client CHECK ( TREAT(object_value AS factureemise_t).client IS NOT NULL ),
+    CONSTRAINT nnl_factureemise_o_datelimite CHECK ( TREAT(object_value AS factureemise_t).datelimite IS NOT NULL ),
+    CONSTRAINT nnl_factureemise_o_payeounon CHECK ( TREAT(object_value AS factureemise_t).payeounon IS NOT NULL ),
+    CONSTRAINT chk_factureemise_o_payeounon CHECK ( TREAT(object_value AS factureemise_t).payeounon IN ( 0, 1 ) ),
+    
+    --ajout des contraintes des factures recues
+    CONSTRAINT nnl_facturerecue_o_client CHECK ( TREAT(object_value AS facturerecue_t).fournisseur IS NOT NULL ),
+    CONSTRAINT nnl_facturerecue_o_datelimite CHECK ( TREAT(object_value AS facturerecue_t).datelimite IS NOT NULL ),
+    CONSTRAINT nnl_facturerecue_o_payeounon CHECK ( TREAT(object_value AS facturerecue_t).payeounon IS NOT NULL ),
+    CONSTRAINT chk_facturerecue_o_payeounon CHECK ( TREAT(object_value AS facturerecue_t).payeounon IN ( 0, 1 ) )
 )
 NESTED TABLE ligneticket STORE AS tablelistrefticketarticles;
-/
-
-CREATE TABLE factureemise_o OF factureemise_t (
-    CONSTRAINT nnl_factureemise_o_client CHECK ( client IS NOT NULL ),
-    CONSTRAINT nnl_factureemise_o_datelimite CHECK ( datelimite IS NOT NULL ),
-    CONSTRAINT nnl_factureemise_o_payeounon CHECK ( payeounon IS NOT NULL ),
-    CONSTRAINT chk_factureemise_o_payeounon CHECK ( payeounon IN ( 0, 1 ) )
-    --PLEASE HELP
-    --CONSTRAINT chk_factureemise_o_employeemmetteur CHECK ( employeemmetteur.column_value).job IN ( 'Directeur', 'Responsable' ) )
-)
-NESTED TABLE ligneticket STORE AS tablelistreffactureemisearticles;
-/
-
-CREATE TABLE facturerecue_o OF facturerecue_t (
-    CONSTRAINT nnl_facturerecue_o_client CHECK ( fournisseur IS NOT NULL ),
-    CONSTRAINT nnl_facturerecue_o_datelimite CHECK ( datelimite IS NOT NULL ),
-    CONSTRAINT nnl_facturerecue_o_payeounon CHECK ( payeounon IS NOT NULL ),
-    CONSTRAINT chk_facturerecue_o_payeounon CHECK ( payeounon IN ( 0, 1 ) )
-    --PLEASE HELP
-    --CONSTRAINT chk_factureemise_o_employeemmetteur CHECK ( employeemmetteur.column_value).job IN ( 'Directeur', 'Responsable' ) )
-)
-NESTED TABLE ligneticket STORE AS tablelistreffacturerecuesarticles;
 /

@@ -24,8 +24,9 @@ FROM
     carte_o oc
 ORDER BY
     value(oc) DESC;
-    
-delete from empl_o;
+
+DELETE FROM empl_o;
+
 DECLARE
     refart1      REF article_t;
     ad1          REF adresse_t;
@@ -42,7 +43,7 @@ BEGIN
         'Biot',
         '06410',
         'Rue Roumanille',
-        17
+        19000
     ) RETURNING ref(ad) INTO ad1;
 
     INSERT INTO adresse_o ad VALUES (
@@ -50,11 +51,11 @@ BEGIN
         'Biot',
         '06410',
         'Rue Roumanille',
-        16
+        17000
     ) RETURNING ref(ad) INTO ad2;
 
     INSERT INTO fournisseur_o f VALUES (
-        1234,
+        12345,
         'First',
         'Boite',
         ad1,
@@ -63,7 +64,7 @@ BEGIN
     ) RETURNING ref(f) INTO fourn1;
 
     INSERT INTO empl_o e VALUES (
-        111111111111,
+        1111111111112,
         'Dupont',
         'Marcello',
         'Caissier',
@@ -74,18 +75,10 @@ BEGIN
         NULL
     ) RETURNING ref(e) INTO employe1;
 
-    INSERT INTO facturerecue_o o VALUES (
-        1,
-        0,
-        listrefligneticket_t(),
-        'autre',
-        NULL,
-        TO_DATE('15-12-2021', 'DD-MM-YYYY'),
-        fourn1,
-        TO_DATE('31-12-2021', 'DD-MM-YYYY'),
-        0
-    ) RETURNING ref(o) INTO fact_recue1;
-
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(1, 0, listrefligneticket_t(), 'autre', NULL,
+                                                   TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
+                                                   0) ) RETURNING ref(o) INTO fact_recue1;
+/*
     INSERT INTO article_o a VALUES (
         0,
         '1111111111111',
@@ -114,7 +107,7 @@ BEGIN
         SELECT
             ligneticket
         FROM
-            facturerecue_o
+            ticket_o
         WHERE
             id = 1
     ) VALUES ( ligne_ticket );
@@ -128,7 +121,8 @@ BEGIN
         NULL
     ) RETURNING ref(c) INTO client1;
 
-    INSERT INTO factureemise_o VALUES (
+    INSERT INTO ticket_o VALUES (
+    factureemise_t(
         1,
         1,
         listrefligneticket_t(),
@@ -137,22 +131,22 @@ BEGIN
         TO_DATE('22-12-2021', 'DD-MM-YYYY'),
         client1,
         TO_DATE('31-12-2021', 'DD-MM-YYYY'),
-        0
+        0)
     );
 
     INSERT INTO TABLE (
         SELECT
             ligneticket
         FROM
-            factureemise_o
+            ticket_o
         WHERE
             id = 1
     ) VALUES ( ligne_ticket );
-
+*/
 END;
 /
 
-DESC factureemise_o
+DESC ticket_o
 /
 
 DECLARE
@@ -183,17 +177,20 @@ END;
 /
 
 DECLARE
-    res1 factureemise_t;
-    bool BOOLEAN;
+    res1         factureemise_t;
+    listarticles listrefligneticket_t;
+    resint       NUMBER;
+    bool         BOOLEAN;
 BEGIN
     SELECT
         value(f)
     INTO res1
     FROM
-        factureemise_o f
+        ticket_o f
     WHERE
         id = 1;
 
+    listarticles := ticket_t.getarticles(1);
     bool := res1.is_valid;
     IF bool THEN
         dbms_output.put_line('quantite in ticket '
@@ -205,5 +202,18 @@ BEGIN
                              || ' is invalid');
     END IF;
 
+    dbms_output.put_line('prix totale de la facture : ' || res1.gettotal);
 END;
 /
+
+SELECT
+    t.column_value.article.prix
+FROM
+    TABLE (
+        SELECT
+            ligneticket
+        FROM
+            ticket_o f
+        WHERE
+            id = 1
+    ) t;
