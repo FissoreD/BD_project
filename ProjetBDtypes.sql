@@ -67,6 +67,8 @@ CREATE OR REPLACE TYPE fournisseur_t
 
 CREATE OR REPLACE TYPE empl_t
 /
+create or replace type ticket_t;
+/
 
 CREATE OR REPLACE TYPE adresse_t AS OBJECT (
     pays       VARCHAR2(30),
@@ -93,10 +95,10 @@ CREATE OR REPLACE TYPE setarticle_t AS
 /
 
 CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
-    parentticket NUMBER,
     numeroligne  NUMBER,
     quantite     NUMBER,
     article      REF article_t,
+    parentticket ref ticket_t,
     MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2
 );
 /
