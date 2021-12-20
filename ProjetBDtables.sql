@@ -69,11 +69,11 @@ CREATE TABLE article_o OF article_t (
 /
 
 CREATE TABLE ligneticket_o OF ligneticket_t (
-    CONSTRAINT pk_ligneticket PRIMARY KEY (numeroligne ),
+    CONSTRAINT pk_ligneticket PRIMARY KEY ( numeroligne ),
     CONSTRAINT chk_ligneticket_o_quantite CHECK ( quantite > 0 ),
     CONSTRAINT nnl_ligneticket_o_quantite CHECK ( quantite IS NOT NULL ),
     CONSTRAINT nnl_ligneticket_o_article CHECK ( article IS NOT NULL ),
-    constraint nnl_ligneticket_o_parentticket check(parentticket is not null)
+    CONSTRAINT nnl_ligneticket_o_parentticket CHECK ( parentticket IS NOT NULL )
 );
 /
 

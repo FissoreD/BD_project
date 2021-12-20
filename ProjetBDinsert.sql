@@ -35,17 +35,19 @@ INSERT INTO carte_o VALUES (
 );
 
 DECLARE
-    refart1       REF article_t;
-    ad1           REF adresse_t;
-    ad2           REF adresse_t;
+    refart1        REF article_t;
+    ad1            REF adresse_t;
+    ad2            REF adresse_t;
     article1       REF article_t;
-    employe1      REF empl_t;
-    fourn1        REF fournisseur_t;
-    client1       REF client_t;
-    fact_recue1   REF facturerecue_t;
-    fact_emise1   REF factureemise_t;
-    ligne_ticket1 REF ligneticket_t;
-    ligne_ticket2 REF ligneticket_t;
+    employe1       REF empl_t;
+    fourn1         REF fournisseur_t;
+    client1        REF client_t;
+    fact_recue1ref REF facturerecue_t;
+    fact_emise1ref REF factureemise_t;
+    fact_recue1    facturerecue_t;
+    fact_emise1    factureemise_t;
+    ligne_ticket1  REF ligneticket_t;
+    ligne_ticket2  REF ligneticket_t;
 BEGIN
     INSERT INTO adresse_o ad VALUES (
         'France',
@@ -86,21 +88,21 @@ BEGIN
 
     INSERT INTO ticket_o o VALUES ( facturerecue_t(1, 0, listrefligneticket_t(), 'autre', NULL,
                                                    TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
-                                                   0) ) RETURNING ref(o) INTO fact_recue1;
+                                                   0) ) RETURNING ref(o) INTO fact_recue1ref;
 
     INSERT INTO article_o a VALUES (
         0,
         '1111111111111',
         'ASUS X53S',
         450,
-        fact_recue1
+        fact_recue1ref
     ) RETURNING ref(a) INTO article1;
 
     INSERT INTO ligneticket_o lt VALUES (
         1,
         5,
         article1,
-        fact_recue1
+        fact_recue1ref
     ) RETURNING ref(lt) INTO ligne_ticket1;
 
     INSERT INTO TABLE (
@@ -111,15 +113,15 @@ BEGIN
         WHERE
             siret = 1234
     ) VALUES ( article1 );
-   INSERT INTO TABLE (
-        SELECT
-            ligneticket
-        FROM
-            ticket_o
-        WHERE
-            id = 1
-    ) VALUES ( ligne_ticket1 );
 
+    SELECT
+        deref(fact_recue1ref)
+    INTO fact_recue1
+    FROM
+        dual;
+
+    fact_recue1.addligneticket(ligne_ticket1);
+    
     INSERT INTO client_o c VALUES (
         1,
         'Croesi',
@@ -131,23 +133,22 @@ BEGIN
 
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(2, 1, listrefligneticket_t(), 'autre', employe1,
                                                      TO_DATE('22-12-2021', 'DD-MM-YYYY'), client1, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
-                                                     0) ) RETURNING ref(fe1) INTO fact_emise1;
+                                                     0) ) RETURNING ref(fe1) INTO fact_emise1ref;
 
     INSERT INTO ligneticket_o lt VALUES (
         2,
         4,
         article1,
-        fact_emise1
-    ) returning ref (lt) into ligne_ticket2;
+        fact_emise1ref
+    ) RETURNING ref(lt) INTO ligne_ticket2;
 
-    INSERT INTO TABLE (
-        SELECT
-            ligneticket
-        FROM
-            ticket_o
-        WHERE
-            id = 2
-    ) VALUES ( ligne_ticket2 );
+    SELECT
+        deref(fact_emise1ref)
+    INTO fact_emise1
+    FROM
+        dual;
+
+    fact_emise1.addligneticket(ligne_ticket2);
 
 END;
 /
@@ -160,6 +161,7 @@ DECLARE
     factures_recues setticket_t;
     factures_emises setticket_t;
 BEGIN
+
     SELECT
         value(f)
     INTO fourn1

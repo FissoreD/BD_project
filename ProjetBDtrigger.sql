@@ -2,13 +2,11 @@ DROP TRIGGER update_stock_quantity;
 
 CREATE OR REPLACE TRIGGER update_stock_quantity BEFORE
     INSERT OR UPDATE ON ligneticket_o
-    REFERENCING
-            NEW AS new
-            OLD AS old
     FOR EACH ROW
 DECLARE
     article      article_t;
     parentticket ticket_t;
+    ligneticket  REF ligneticket_t;
     quantite_exception EXCEPTION;
 BEGIN
     SELECT
@@ -30,20 +28,21 @@ BEGIN
         WHERE
             codebarre = article.codebarre;
 
+    ELSIF article.quantite < :new.quantite THEN
+        raise_application_error(-20001, 'The quantity of article '
+                                        || article.nom
+                                        || ' in line no '
+                                        || :new.numeroligne
+                                        || ' of ticket '
+                                        || parentticket.id
+                                        || ' is not available in stock');
     ELSE
-        BEGIN
-            IF article.quantite < :new.quantite THEN
-                raise_application_error(-20001, 'The quantity of article ' || article.nom || ' in line no ' || :new.numeroligne || ' of ticket ' || parentticket.id || ' is not available in stock');
-            ELSE
-                UPDATE article_o
-                SET
-                    quantite = quantite - :new.quantite
-                WHERE
-                    codebarre = article.codebarre;
+        UPDATE article_o
+        SET
+            quantite = quantite - :new.quantite
+        WHERE
+            codebarre = article.codebarre;
 
-            END IF;
-
-        END;
     END IF;
 
 END;
