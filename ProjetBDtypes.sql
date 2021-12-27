@@ -48,14 +48,6 @@ CREATE OR REPLACE TYPE facturerecue_t
 CREATE OR REPLACE TYPE factureemise_t
 /
 
-CREATE OR REPLACE TYPE listreffacturerecue_t AS
-    TABLE OF REF facturerecue_t
-/
-
-CREATE OR REPLACE TYPE listreffactureemise_t AS
-    TABLE OF REF factureemise_t
-/
-
 CREATE OR REPLACE TYPE carte_t
 /
 

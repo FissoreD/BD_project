@@ -35,7 +35,7 @@ CREATE OR REPLACE TYPE BODY client_t AS
         res setticket_t;
     BEGIN
         SELECT
-            CAST(COLLECT(value(f)) AS setticket_t) 
+            CAST(COLLECT(value(f)) AS setticket_t)
         INTO res
         FROM
             ticket_o f
@@ -271,7 +271,7 @@ CREATE OR REPLACE TYPE BODY factureemise_t AS
             FROM
                 dual;
 
-            IF lignes_ticket(i).quantite > article.quantite THEN
+            IF article.quantite < 0 THEN
                 RETURN false;
             END IF;
         END LOOP;

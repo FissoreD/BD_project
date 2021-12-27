@@ -121,7 +121,6 @@ BEGIN
         dual;
 
     fact_recue1.addligneticket(ligne_ticket1);
-    
     INSERT INTO client_o c VALUES (
         1,
         'Croesi',
@@ -149,7 +148,6 @@ BEGIN
         dual;
 
     fact_emise1.addligneticket(ligne_ticket2);
-
 END;
 /
 
@@ -161,7 +159,6 @@ DECLARE
     factures_recues setticket_t;
     factures_emises setticket_t;
 BEGIN
-
     SELECT
         value(f)
     INTO fourn1
@@ -203,10 +200,7 @@ BEGIN
 
     listarticles := ticket_t.getarticles(1);
     bool := res1.is_valid;
-    IF
-        true
-        AND bool
-    THEN
+    IF bool THEN
         dbms_output.put_line('quantite in ticket '
                              || res1.id
                              || ' is valid');
