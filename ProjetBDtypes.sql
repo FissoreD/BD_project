@@ -74,11 +74,12 @@ CREATE OR REPLACE TYPE adresse_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE article_t AS OBJECT (
-    quantite  NUMBER,
-    codebarre VARCHAR2(13),
-    nom       VARCHAR(50),
-    prix      NUMBER,
-    achat     REF facturerecue_t,
+    quantite   NUMBER,
+    codebarre  VARCHAR2(13),
+    nom        VARCHAR(50),
+    prix_achat NUMBER,
+    prix_vente NUMBER,
+    achat      REF facturerecue_t,
     MAP MEMBER FUNCTION comparticle RETURN VARCHAR2
 );
 /
@@ -166,8 +167,7 @@ CREATE OR REPLACE TYPE factureemise_t UNDER ticket_t (
     client     REF client_t,
     datelimite DATE,
     --ceci est un boolean
-    payeounon  NUMBER,
-    MEMBER FUNCTION is_valid RETURN BOOLEAN
+    payeounon  NUMBER
 );
 /
 

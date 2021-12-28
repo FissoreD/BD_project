@@ -27,6 +27,7 @@ WHERE
     embauche > TO_DATE('15-10-2000', 'DD-MM-YYYY');
 
 -- 2 requetes impliquant 2 tables
+    -- toutes les factures 
 
 -- 2 requetes impliquant plus de 2 tables
     -- les cartes utilisées plus des 5 fois depuis le 22/10/2000

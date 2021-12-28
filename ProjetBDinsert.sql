@@ -94,6 +94,7 @@ BEGIN
         0,
         '1111111111111',
         'ASUS X53S',
+        380,
         450,
         fact_recue1ref
     ) RETURNING ref(a) INTO article1;
@@ -189,6 +190,7 @@ DECLARE
     listarticles listrefligneticket_t;
     resint       NUMBER;
     bool         BOOLEAN;
+    articletemp  article_t;
 BEGIN
     SELECT
         TREAT(value(f) AS factureemise_t)
@@ -199,16 +201,18 @@ BEGIN
         id = 2;
 
     listarticles := ticket_t.getarticles(1);
-    bool := res1.is_valid;
-    IF bool THEN
-        dbms_output.put_line('quantite in ticket '
-                             || res1.id
-                             || ' is valid');
-    ELSE
-        dbms_output.put_line('quantite in ticket '
-                             || res1.id
-                             || ' is invalid');
-    END IF;
+    dbms_output.put_line('Le ticket '
+                         || res1.id
+                         || 'contient les articles suivants :');
+    FOR i IN listarticles.first..listarticles.last LOOP
+        SELECT
+            deref(deref(listarticles(i)).article)
+        INTO articletemp
+        FROM
+            dual;
+
+        dbms_output.put_line('prix totale de la facture : ' || articletemp.nom);
+    END LOOP;
 
     dbms_output.put_line('prix totale de la facture : ' || res1.gettotal());
 END;

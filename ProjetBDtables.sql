@@ -64,7 +64,9 @@ CREATE TABLE article_o OF article_t (
     CONSTRAINT chk_article_o_quantite CHECK ( quantite >= 0 ),
     CONSTRAINT nnl_article_o_quantite CHECK ( quantite IS NOT NULL ),
     CONSTRAINT nnl_article_o_nom CHECK ( nom IS NOT NULL ),
-    CONSTRAINT nnl_article_o_prix CHECK ( prix IS NOT NULL )
+    CONSTRAINT nnl_article_o_prix_achat CHECK ( prix_achat IS NOT NULL ),
+    CONSTRAINT nnl_article_o_prix_vente CHECK ( prix_vente IS NOT NULL ),
+    CONSTRAINT chk_article_o_prix_vente CHECK ( prix_vente >= prix_achat )
 )
 /
 

@@ -14,7 +14,7 @@ CREATE OR REPLACE TYPE BODY article_t AS
     MAP MEMBER FUNCTION comparticle RETURN VARCHAR2 IS
     BEGIN
         RETURN nom
-               || prix
+               || prix_vente
                || codebarre;
     END;
 
@@ -173,7 +173,12 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
             FROM
                 dual;
 
-            accum := accum + articletemp.prix * quantitetemp;
+            IF self.estvente = 0 THEN
+                accum := accum + articletemp.prix_achat * quantitetemp;
+            ELSE
+                accum := accum + articletemp.prix_vente * quantitetemp;
+            END IF;
+
         END LOOP;
 
         RETURN accum;
@@ -238,45 +243,6 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE;
-    END;
-
-END;
-/
-
-CREATE OR REPLACE TYPE BODY factureemise_t AS
-    MEMBER FUNCTION is_valid RETURN BOOLEAN IS
-        res                 BOOLEAN;
-        quantite_en_facture NUMBER;
-        quantite_en_stock   NUMBER;
-        lignes_ticket       setligneticket_t;
-        article             article_t;
-    BEGIN
-        SELECT
-            CAST(COLLECT(deref(lre.column_value)) AS setligneticket_t)
-        INTO lignes_ticket
-        FROM
-            TABLE (
-                SELECT
-                    t.ligneticket
-                FROM
-                    ticket_o t
-                WHERE
-                    t.id = self.id
-            ) lre;
-
-        FOR i IN lignes_ticket.first..lignes_ticket.last LOOP
-            SELECT
-                deref(lignes_ticket(i).article)
-            INTO article
-            FROM
-                dual;
-
-            IF article.quantite < 0 THEN
-                RETURN false;
-            END IF;
-        END LOOP;
-
-        RETURN true;
     END;
 
 END;
