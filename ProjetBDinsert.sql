@@ -47,16 +47,16 @@ INSERT INTO carte_o VALUES (
 );
 
 DECLARE
-    ad1            REF adresse_t;
-    ad2            REF adresse_t;
-    ad3            REF adresse_t;
-    ad4            REF adresse_t;
-    ad5            REF adresse_t;
-    ad6            REF adresse_t;
-    ad7            REF adresse_t;
-    ad8            REF adresse_t;
-    ad9            REF adresse_t;
-    ad10           REF adresse_t;
+    ad1             REF adresse_t;
+    ad2             REF adresse_t;
+    ad3             REF adresse_t;
+    ad4             REF adresse_t;
+    ad5             REF adresse_t;
+    ad6             REF adresse_t;
+    ad7             REF adresse_t;
+    ad8             REF adresse_t;
+    ad9             REF adresse_t;
+    ad10            REF adresse_t;
     ad11            REF adresse_t;
     ad12            REF adresse_t;
     ad13            REF adresse_t;
@@ -66,106 +66,111 @@ DECLARE
     ad17            REF adresse_t;
     ad18            REF adresse_t;
     ad19            REF adresse_t;
-    ad20           REF adresse_t;
-    article1       REF article_t;
-    article2       REF article_t;
-    article3       REF article_t;
-    article4       REF article_t;
-    article5       REF article_t;
-    article6       REF article_t;
-    article7       REF article_t;
-    article8       REF article_t;
-    article9       REF article_t;
+    ad20            REF adresse_t;
+    article1        REF article_t;
+    article2        REF article_t;
+    article3        REF article_t;
+    article4        REF article_t;
+    article5        REF article_t;
+    article6        REF article_t;
+    article7        REF article_t;
+    article8        REF article_t;
+    article9        REF article_t;
     article10       REF article_t;
-    employe1       REF empl_t;
-    employe2       REF empl_t;
-    employe3       REF empl_t;
-    employe4       REF empl_t;
-    employe5       REF empl_t;
-    employe6       REF empl_t;
-    fourn1         REF fournisseur_t;
-    fourn2         REF fournisseur_t;
-    fourn3         REF fournisseur_t;
-    fourn4         REF fournisseur_t;
-    fourn5         REF fournisseur_t;
-    client1        REF client_t;
-    client2        REF client_t;
-    client3        REF client_t;
-    client4        REF client_t;
-    client5        REF client_t;
-    client6        REF client_t;
-    client7        REF client_t;
-    client8        REF client_t;
-    client9        REF client_t;
+    article11       REF article_t;
+    article12       REF article_t;
+    article13       REF article_t;
+    article14       REF article_t;
+    article15       REF article_t;
+    employe1        REF empl_t;
+    employe2        REF empl_t;
+    employe3        REF empl_t;
+    employe4        REF empl_t;
+    employe5        REF empl_t;
+    employe6        REF empl_t;
+    fourn1          REF fournisseur_t;
+    fourn2          REF fournisseur_t;
+    fourn3          REF fournisseur_t;
+    fourn4          REF fournisseur_t;
+    fourn5          REF fournisseur_t;
+    client1         REF client_t;
+    client2         REF client_t;
+    client3         REF client_t;
+    client4         REF client_t;
+    client5         REF client_t;
+    client6         REF client_t;
+    client7         REF client_t;
+    client8         REF client_t;
+    client9         REF client_t;
     client10        REF client_t;
-    fact_recue1ref REF facturerecue_t;
-    fact_recue2ref REF facturerecue_t;
-    fact_recue3ref REF facturerecue_t;
-    fact_recue4ref REF facturerecue_t;
-    fact_recue5ref REF facturerecue_t;
-    fact_recue6ref REF facturerecue_t;
-    fact_recue7ref REF facturerecue_t;
-    fact_recue8ref REF facturerecue_t;
-    fact_recue9ref REF facturerecue_t;
+    fact_recue1ref  REF facturerecue_t;
+    fact_recue2ref  REF facturerecue_t;
+    fact_recue3ref  REF facturerecue_t;
+    fact_recue4ref  REF facturerecue_t;
+    fact_recue5ref  REF facturerecue_t;
+    fact_recue6ref  REF facturerecue_t;
+    fact_recue7ref  REF facturerecue_t;
+    fact_recue8ref  REF facturerecue_t;
+    fact_recue9ref  REF facturerecue_t;
     fact_recue10ref REF facturerecue_t;
-    fact_emise1ref REF factureemise_t;
-    fact_emise2ref REF factureemise_t;
-    fact_emise3ref REF factureemise_t;
-    fact_emise4ref REF factureemise_t;
-    fact_emise5ref REF factureemise_t;
-    fact_emise6ref REF factureemise_t;
-    fact_emise7ref REF factureemise_t;
-    fact_emise8ref REF factureemise_t;
-    fact_emise9ref REF factureemise_t;
+    fact_emise1ref  REF factureemise_t;
+    fact_emise2ref  REF factureemise_t;
+    fact_emise3ref  REF factureemise_t;
+    fact_emise4ref  REF factureemise_t;
+    fact_emise5ref  REF factureemise_t;
+    fact_emise6ref  REF factureemise_t;
+    fact_emise7ref  REF factureemise_t;
+    fact_emise8ref  REF factureemise_t;
+    fact_emise9ref  REF factureemise_t;
     fact_emise10ref REF factureemise_t;
-    fact_recue1    facturerecue_t;
-    fact_recue2    facturerecue_t;
-    fact_recue3    facturerecue_t;
-    fact_recue4    facturerecue_t;
-    fact_recue5    facturerecue_t;
-    fact_recue6    facturerecue_t;
-    fact_recue7    facturerecue_t;
-    fact_recue8    facturerecue_t;
-    fact_recue9    facturerecue_t;
+    fact_recue1     facturerecue_t;
+    fact_recue2     facturerecue_t;
+    fact_recue3     facturerecue_t;
+    fact_recue4     facturerecue_t;
+    fact_recue5     facturerecue_t;
+    fact_recue6     facturerecue_t;
+    fact_recue7     facturerecue_t;
+    fact_recue8     facturerecue_t;
+    fact_recue9     facturerecue_t;
     fact_recue10    facturerecue_t;
-    fact_emise1    factureemise_t;
-    fact_emise2    factureemise_t;
-    fact_emise3    factureemise_t;
-    fact_emise4    factureemise_t;
-    fact_emise5    factureemise_t;
-    fact_emise6    factureemise_t;
-    fact_emise7    factureemise_t;
-    fact_emise8    factureemise_t;
-    fact_emise9    factureemise_t;
+    fact_emise1     factureemise_t;
+    fact_emise2     factureemise_t;
+    fact_emise3     factureemise_t;
+    fact_emise4     factureemise_t;
+    fact_emise5     factureemise_t;
+    fact_emise6     factureemise_t;
+    fact_emise7     factureemise_t;
+    fact_emise8     factureemise_t;
+    fact_emise9     factureemise_t;
     fact_emise10    factureemise_t;
-    ligne_ticket1  REF ligneticket_t;
-    ligne_ticket2  REF ligneticket_t;
-    ligne_ticket3  REF ligneticket_t;
-    ligne_ticket4  REF ligneticket_t;
-    ligne_ticket5  REF ligneticket_t;
-    ligne_ticket6  REF ligneticket_t;
-    ligne_ticket7  REF ligneticket_t;
-    ligne_ticket8  REF ligneticket_t;
-    ligne_ticket9  REF ligneticket_t;
-    ligne_ticket10 REF ligneticket_t;
-    ligne_ticket11 REF ligneticket_t;
-    ligne_ticket12 REF ligneticket_t;
-    ligne_ticket13 REF ligneticket_t;
-    ligne_ticket14 REF ligneticket_t;
-    ligne_ticket15 REF ligneticket_t;
-    ligne_ticket16 REF ligneticket_t;
-    ligne_ticket17 REF ligneticket_t;
-    ligne_ticket18 REF ligneticket_t;
-    ligne_ticket19 REF ligneticket_t;
-    ligne_ticket20 REF ligneticket_t;
-    ligne_ticket21 REF ligneticket_t;
-    ligne_ticket22 REF ligneticket_t;
-    ligne_ticket23 REF ligneticket_t;
-    ligne_ticket24 REF ligneticket_t;
-    ligne_ticket25 REF ligneticket_t;
-    ligne_ticket26 REF ligneticket_t;
-    ligne_ticket27 REF ligneticket_t;
-    ligne_ticket28 REF ligneticket_t;
+    ligne_ticket1   REF ligneticket_t;
+    ligne_ticket2   REF ligneticket_t;
+    ligne_ticket3   REF ligneticket_t;
+    ligne_ticket4   REF ligneticket_t;
+    ligne_ticket5   REF ligneticket_t;
+    ligne_ticket6   REF ligneticket_t;
+    ligne_ticket7   REF ligneticket_t;
+    ligne_ticket8   REF ligneticket_t;
+    ligne_ticket9   REF ligneticket_t;
+    ligne_ticket10  REF ligneticket_t;
+    ligne_ticket11  REF ligneticket_t;
+    ligne_ticket12  REF ligneticket_t;
+    ligne_ticket13  REF ligneticket_t;
+    ligne_ticket14  REF ligneticket_t;
+    ligne_ticket15  REF ligneticket_t;
+    ligne_ticket16  REF ligneticket_t;
+    ligne_ticket17  REF ligneticket_t;
+    ligne_ticket18  REF ligneticket_t;
+    ligne_ticket19  REF ligneticket_t;
+    ligne_ticket20  REF ligneticket_t;
+    ligne_ticket21  REF ligneticket_t;
+    ligne_ticket22  REF ligneticket_t;
+    ligne_ticket23  REF ligneticket_t;
+    ligne_ticket24  REF ligneticket_t;
+    ligne_ticket25  REF ligneticket_t;
+    ligne_ticket26  REF ligneticket_t;
+    ligne_ticket27  REF ligneticket_t;
+    ligne_ticket28  REF ligneticket_t;
 BEGIN
     INSERT INTO adresse_o ad VALUES (
         'France',
@@ -211,7 +216,7 @@ BEGIN
         'France',
         'Paris',
         '75000',
-        'Champs Elysés',
+        'Champs Elyses',
         1
     ) RETURNING ref(ad) INTO ad6;
 
@@ -457,7 +462,7 @@ BEGIN
                                                    1) ) RETURNING ref(o) INTO fact_recue3ref;
 
     INSERT INTO ticket_o o VALUES ( facturerecue_t(4, 0, listrefligneticket_t(), 'cb', NULL,
-                                                   TO_DATE('15-12-2020', 'DD-MM-YYYY'), fourn3, TO_DATE('31-02-2021', 'DD-MM-YYYY'),
+                                                   TO_DATE('15-12-2020', 'DD-MM-YYYY'), fourn3, TO_DATE('27-02-2021', 'DD-MM-YYYY'),
                                                    1) ) RETURNING ref(o) INTO fact_recue4ref;
 
     INSERT INTO ticket_o o VALUES ( facturerecue_t(5, 0, listrefligneticket_t(), 'cb', NULL,
@@ -483,7 +488,7 @@ BEGIN
     INSERT INTO ticket_o o VALUES ( facturerecue_t(10, 0, listrefligneticket_t(), 'cheque', NULL,
                                                    TO_DATE('25-12-2018', 'DD-MM-YYYY'), fourn5, TO_DATE('31-12-2020', 'DD-MM-YYYY'),
                                                    1) ) RETURNING ref(o) INTO fact_recue10ref;
-                                            
+
     INSERT INTO article_o a VALUES (
         5,
         '1111111111111',
@@ -676,7 +681,6 @@ BEGIN
     fact_recue1.addligneticket(ligne_ticket1);
     fact_recue1.addligneticket(ligne_ticket2);
     fact_recue1.addligneticket(ligne_ticket3);
-
     INSERT INTO ligneticket_o lt VALUES (
         4,
         50,
@@ -700,7 +704,6 @@ BEGIN
         dual;
 
     fact_recue2.addligneticket(ligne_ticket4);
-
     INSERT INTO ligneticket_o lt VALUES (
         5,
         20,
@@ -724,7 +727,6 @@ BEGIN
         dual;
 
     fact_recue3.addligneticket(ligne_ticket5);
-
     INSERT INTO ligneticket_o lt VALUES (
         6,
         5,
@@ -748,7 +750,6 @@ BEGIN
         dual;
 
     fact_recue4.addligneticket(ligne_ticket6);
-
     INSERT INTO ligneticket_o lt VALUES (
         7,
         5,
@@ -772,7 +773,6 @@ BEGIN
         dual;
 
     fact_recue5.addligneticket(ligne_ticket7);
-
     INSERT INTO ligneticket_o lt VALUES (
         8,
         5,
@@ -796,7 +796,6 @@ BEGIN
         dual;
 
     fact_recue6.addligneticket(ligne_ticket8);
-
     INSERT INTO ligneticket_o lt VALUES (
         9,
         5,
@@ -820,7 +819,6 @@ BEGIN
         dual;
 
     fact_recue7.addligneticket(ligne_ticket9);
-
     INSERT INTO ligneticket_o lt VALUES (
         10,
         5,
@@ -844,7 +842,6 @@ BEGIN
         dual;
 
     fact_recue8.addligneticket(ligne_ticket10);
-
     INSERT INTO ligneticket_o lt VALUES (
         11,
         5,
@@ -868,7 +865,6 @@ BEGIN
         dual;
 
     fact_recue9.addligneticket(ligne_ticket11);
-
     INSERT INTO ligneticket_o lt VALUES (
         12,
         5,
@@ -943,7 +939,6 @@ BEGIN
     fact_recue10.addligneticket(ligne_ticket13);
     fact_recue10.addligneticket(ligne_ticket14);
     fact_recue10.addligneticket(ligne_ticket15);
-
     INSERT INTO client_o c VALUES (
         1,
         'Croesi',
@@ -1052,7 +1047,6 @@ BEGIN
         dual;
 
     fact_emise1.addligneticket(ligne_ticket16);
-
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
                                                      TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021', 'DD-MM-YYYY'),
                                                      1) ) RETURNING ref(fe1) INTO fact_emise2ref;
@@ -1079,7 +1073,6 @@ BEGIN
 
     fact_emise2.addligneticket(ligne_ticket17);
     fact_emise2.addligneticket(ligne_ticket18);
-
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1,
                                                      TO_DATE('25-12-2021', 'DD-MM-YYYY'), client5, TO_DATE('20-11-2021', 'DD-MM-YYYY'),
                                                      1) ) RETURNING ref(fe1) INTO fact_emise3ref;
@@ -1098,7 +1091,6 @@ BEGIN
         dual;
 
     fact_emise3.addligneticket(ligne_ticket19);
-
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1,
                                                      TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-01-2022', 'DD-MM-YYYY'),
                                                      0) ) RETURNING ref(fe1) INTO fact_emise4ref;
@@ -1117,7 +1109,6 @@ BEGIN
         dual;
 
     fact_emise4.addligneticket(ligne_ticket20);
-
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(15, 1, listrefligneticket_t(), 'autre', employe2,
                                                      TO_DATE('25-10-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-11-2021', 'DD-MM-YYYY'),
                                                      1) ) RETURNING ref(fe1) INTO fact_emise5ref;
@@ -1185,12 +1176,13 @@ BEGIN
     FROM
         ticket_o f
     WHERE
-        id = 2;
+        id = 12;
 
     listarticles := ticket_t.getarticles(1);
+    
     dbms_output.put_line('Le ticket '
                          || res1.id
-                         || 'contient les articles suivants :');
+                         || ' contient les articles suivants :');
     FOR i IN listarticles.first..listarticles.last LOOP
         SELECT
             deref(deref(listarticles(i)).article)
@@ -1198,7 +1190,7 @@ BEGIN
         FROM
             dual;
 
-        dbms_output.put_line('prix totale de la facture : ' || articletemp.nom);
+        dbms_output.put_line('Article n.'|| i ||' : ' || articletemp.nom);
     END LOOP;
 
     dbms_output.put_line('prix totale de la facture : ' || res1.gettotal());

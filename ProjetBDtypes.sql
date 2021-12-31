@@ -36,6 +36,8 @@ DROP TYPE listrefarticles_t FORCE;
 
 DROP TYPE carte_t FORCE;
 
+DROP TYPE setticket_t FORCE;
+
 DROP TYPE setfacturerecue_t FORCE;
 
 DROP TYPE setfactureemise_t FORCE;
