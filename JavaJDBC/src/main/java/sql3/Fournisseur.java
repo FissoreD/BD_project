@@ -67,7 +67,7 @@ public class Fournisseur implements SQLData {
 
     @Override
     public String getSQLTypeName() throws SQLException {
-        return null;
+        return sql_type;
     }
 
     @Override
@@ -104,6 +104,7 @@ public class Fournisseur implements SQLData {
                         }
                         """, siret, nom, prenom, displayInfoAdresseFournisseurFromRef(), naissance);
     }
+
     public String displayInfoAdresseFournisseurFromRef() throws SQLException {
         Ref refAdresse1 = this.getAdresse();
         Adresse adresse1 = (Adresse) refAdresse1.getObject();
