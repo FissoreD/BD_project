@@ -1,4 +1,23 @@
 package sql3;
 
-public class Empl {
+import java.sql.SQLData;
+import java.sql.SQLException;
+import java.sql.SQLInput;
+import java.sql.SQLOutput;
+
+public class Empl implements SQLData {
+    @Override
+    public String getSQLTypeName() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void readSQL(SQLInput stream, String typeName) throws SQLException {
+
+    }
+
+    @Override
+    public void writeSQL(SQLOutput stream) throws SQLException {
+
+    }
 }

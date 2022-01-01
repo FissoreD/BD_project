@@ -20,17 +20,28 @@ public class Carte implements SQLData {
     public String getSQLTypeName() throws SQLException {
         return sql_type;
     }
+    public String getNom() {
+        return nom;
+    }
 
-    public Array getListRefClients() {
-        return listRefClients;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public float getRemise() {
         return remise;
     }
 
-    public String getNom() {
-        return nom;
+    public void setRemise(float remise) {
+        this.remise = remise;
+    }
+
+    public Array getListRefClients() {
+        return listRefClients;
+    }
+
+    public void setListRefClients(Array listRefClients) {
+        this.listRefClients = listRefClients;
     }
 
     @Override
@@ -67,7 +78,7 @@ public class Carte implements SQLData {
         System.out.println("<Clients:");
         for (Ref lesRefDesEmploye : lesRefDesEmployes) {
             Client client1 = (Client) lesRefDesEmploye.getObject();
-            System.out.println("   [clientId=" + client1.getId() + " ename=" + client1.getName() + "]");
+            System.out.println("   [idClient" + client1.getId() + " nomClient=" + client1.getNom() + "]");
 
         }
         System.out.println(">");
