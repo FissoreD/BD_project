@@ -20,6 +20,7 @@ public class Carte implements SQLData {
     public String getSQLTypeName() throws SQLException {
         return sql_type;
     }
+
     public String getNom() {
         return nom;
     }
