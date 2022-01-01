@@ -135,4 +135,14 @@ public class Ticket implements SQLData {
         Carte carte1 = (Carte) refCarte1.getObject();
         return carte1.toString();
     }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + id +
+                ", estvente=" + estvente +
+                ", paiement='" + paiement + '\'' +
+                ", dateemission=" + dateemission +
+                '}';
+    }
 }

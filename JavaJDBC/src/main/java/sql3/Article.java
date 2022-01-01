@@ -112,6 +112,15 @@ public class Article implements SQLData {
                         """, quantite, codebarre, nom, prix_vente);
     }
 
+    @Override
+    public String toString() {
+        return "Article{" +
+                "codebarre='" + codebarre + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prix_vente=" + prix_vente +
+                '}';
+    }
+
     /*public String displayInfoFactureRecueFromRef() throws SQLException {
         Ref refFacture1 = this.getAchat();
         FactureRecue fr1 = (Adresse) refFacture1.getObject();
