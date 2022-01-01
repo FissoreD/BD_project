@@ -104,7 +104,7 @@ public class Adresse implements SQLData {
         this.numero = stream.readInt();
     }
 
-    /*
+    /**
         Ecrire dans le flot dans l'ordre.
     */
     public void writeSQL(SQLOutput stream) throws SQLException {
