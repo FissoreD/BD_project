@@ -84,4 +84,12 @@ public class Carte implements SQLData {
         }
         System.out.println(">");
     }
+
+    @Override
+    public String toString() {
+        return "Carte{" +
+                "nom='" + nom + '\'' +
+                ", remise=" + remise +
+                '}';
+    }
 }

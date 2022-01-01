@@ -123,4 +123,16 @@ public class Ticket implements SQLData {
                         }
                         """, id, estvente, paiement, dateemission);
     }
+
+    public String displayInfoEmployeEmmetteurFromRef() throws SQLException {
+        Ref refEmpl1 = this.getEmployeemmetteur();
+        Empl empl1 = (Empl) refEmpl1.getObject();
+        return empl1.toString();
+    }
+
+    public String displayInfoCarteReductionFromRef() throws SQLException {
+        Ref refCarte1 = this.getCarte_reduction();
+        Carte carte1 = (Carte) refCarte1.getObject();
+        return carte1.toString();
+    }
 }

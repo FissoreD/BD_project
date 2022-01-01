@@ -168,4 +168,14 @@ public class Empl implements SQLData {
         sb.append("\n /CV>] \n");
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return "Empl{" +
+                "numsecu=" + numsecu +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", job='" + job + '\'' +
+                '}';
+    }
 }
