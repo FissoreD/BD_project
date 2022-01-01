@@ -162,6 +162,7 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
         articletemp   article_t;
         quantitetemp  NUMBER;
         listreflignes listrefligneticket_t := ticket_t.getarticles(self.id);
+        carte         carte_t;
     BEGIN
         FOR i IN listreflignes.first..listreflignes.last LOOP
             SELECT
@@ -180,6 +181,16 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
             END IF;
 
         END LOOP;
+
+        SELECT
+            deref(self.carte_reduction)
+        INTO carte
+        FROM
+            dual;
+
+        IF carte IS NOT NULL THEN
+            accum := accum * ( 1 - carte.remise );
+        END IF;
 
         RETURN accum;
     END;
@@ -243,6 +254,82 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE;
+    END;
+
+    MEMBER FUNCTION print_ticket RETURN VARCHAR2 IS
+
+        listarticles listrefligneticket_t;
+        quantite     NUMBER;
+        articletemp  article_t;
+        txt          VARCHAR(20);
+        carte        carte_t;
+        res          VARCHAR2(500);
+    BEGIN
+        listarticles := ticket_t.getarticles(self.id);
+        IF self.estvente = 1 THEN
+            txt := 'de vente';
+        ELSE
+            txt := 'd''achat';
+        END IF;
+
+        res := res
+               || 'Le ticket '
+               || txt
+               || ' numero '
+               || self.id
+               || ' contient les articles suivants :';
+
+        FOR i IN listarticles.first..listarticles.last LOOP
+            SELECT
+                deref(deref(listarticles(i)).article),
+                deref(listarticles(i)).quantite
+            INTO
+                articletemp,
+                quantite
+            FROM
+                dual;
+
+            res := res
+                   || chr(13)
+                   || chr(10)
+                   || 'Article n.'
+                   || i
+                   || ' : '
+                   || articletemp.nom
+                   || ' (quantite = '
+                   || quantite
+                   || ', prix_vente = '
+                   || articletemp.prix_vente
+                   || ', prix_achat = '
+                   || articletemp.prix_achat
+                   || ')';
+
+        END LOOP;
+
+        SELECT
+            deref(self.carte_reduction)
+        INTO carte
+        FROM
+            dual;
+
+        IF carte IS NOT NULL THEN
+            res := res
+                   || chr(13)
+                   || chr(10)
+                   || 'sur ce ticket il y a une reduction de '
+                   || carte.remise
+                   || ' %';
+        END IF;
+
+        res := res
+               || chr(13)
+               || chr(10)
+               || 'prix totale '
+               || id
+               || ' : '
+               || self.gettotal();
+
+        RETURN res;
     END;
 
 END;

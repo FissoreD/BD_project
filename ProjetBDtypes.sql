@@ -146,7 +146,9 @@ CREATE OR REPLACE TYPE ticket_t AS OBJECT (
     ligneticket      listrefligneticket_t,
     paiement         VARCHAR2(30),
     employeemmetteur REF empl_t,
+    carte_reduction  REF carte_t,
     dateemission     DATE,
+    MEMBER FUNCTION print_ticket RETURN VARCHAR2,
     MAP MEMBER FUNCTION compticket RETURN VARCHAR2,
     STATIC FUNCTION getarticles (
            id1 IN NUMBER

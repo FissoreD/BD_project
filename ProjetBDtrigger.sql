@@ -1,5 +1,3 @@
-DROP TRIGGER update_stock_quantity;
-
 CREATE OR REPLACE TRIGGER update_stock_quantity BEFORE
     INSERT OR UPDATE ON ligneticket_o
     FOR EACH ROW
