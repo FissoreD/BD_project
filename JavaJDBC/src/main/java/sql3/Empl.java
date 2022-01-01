@@ -107,6 +107,7 @@ public class Empl implements SQLData {
 
     @Override
     public void readSQL(SQLInput stream, String typeName) throws SQLException {
+        this.sql_type = typeName;
         this.numsecu = stream.readInt();
         this.nom = stream.readString();
         this.prenom = stream.readString();
@@ -129,7 +130,6 @@ public class Empl implements SQLData {
         stream.writeDate(embauche);
         stream.writeFloat(salaire);
         stream.writeClob(cv);
-
     }
 
     public void display() throws SQLException, IOException {
@@ -147,10 +147,10 @@ public class Empl implements SQLData {
                          salaire = %f
                          cv = %s
                         }
-                        """, numsecu, nom, prenom, job, displayInfoAdresseFournisseurFromRef(), naissance, embauche, salaire, displayCV());
+                        """, numsecu, nom, prenom, job, displayInfoAdresseEmplFromRef(), naissance, embauche, salaire, displayCV());
     }
 
-    public String displayInfoAdresseFournisseurFromRef() throws SQLException {
+    public String displayInfoAdresseEmplFromRef() throws SQLException {
         Ref refAdresse1 = this.getAdresse();
         Adresse adresse1 = (Adresse) refAdresse1.getObject();
         return adresse1.toString();
