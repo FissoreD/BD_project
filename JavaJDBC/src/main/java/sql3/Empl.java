@@ -7,7 +7,7 @@ import java.sql.*;
 public class Empl implements SQLData {
 
     private String sql_type;
-    private int numsecu;
+    private long numsecu;
     private String nom;
     private String prenom;
     private String job;
@@ -32,7 +32,7 @@ public class Empl implements SQLData {
         this.cv = cv;
     }
 
-    public int getNumsecu() {
+    public long getNumsecu() {
         return numsecu;
     }
 
@@ -108,7 +108,7 @@ public class Empl implements SQLData {
     @Override
     public void readSQL(SQLInput stream, String typeName) throws SQLException {
         this.sql_type = typeName;
-        this.numsecu = stream.readInt();
+        this.numsecu = stream.readLong();
         this.nom = stream.readString();
         this.prenom = stream.readString();
         this.job = stream.readString();
@@ -121,7 +121,7 @@ public class Empl implements SQLData {
 
     @Override
     public void writeSQL(SQLOutput stream) throws SQLException {
-        stream.writeInt(numsecu);
+        stream.writeLong(numsecu);
         stream.writeString(nom);
         stream.writeString(prenom);
         stream.writeString(job);
@@ -158,12 +158,14 @@ public class Empl implements SQLData {
 
     public String displayCV() throws java.sql.SQLException, java.io.IOException {
         StringBuilder sb = new StringBuilder("");
-        BufferedReader clobReader = null;
-        clobReader = new BufferedReader(this.getCv().getCharacterStream());
-        String ligne = null;
         sb.append("\n\n[ <CV/ ");
-        while ((ligne = clobReader.readLine()) != null) {
-            sb.append("   ").append(ligne);
+        BufferedReader clobReader;
+        if (cv != null) {
+            clobReader = new BufferedReader(this.getCv().getCharacterStream());
+            String ligne;
+            while ((ligne = clobReader.readLine()) != null) {
+                sb.append("   ").append(ligne);
+            }
         }
         sb.append("\n /CV>] \n");
         return sb.toString();

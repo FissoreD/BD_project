@@ -1,5 +1,6 @@
 package sql3;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class Main {
                 t.loop();
             }
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException | IOException e) {
             System.out.println("Echec du mapping");
             e.printStackTrace();
         }
@@ -48,10 +49,10 @@ public class Main {
     }
 
     private enum Types{
-        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, TICKET;
+        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, TICKET, ARTICLE;
         public final String className = this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         public final String typePath = path + "." + this + "_T";
-        public void loop() throws SQLException {
+        public void loop() throws SQLException, IOException {
             String query = String.format("SELECT value(c) FROM %s_o c", this);
 
             ResultSet queryResult = stmt.executeQuery(query);
@@ -62,6 +63,9 @@ public class Main {
                     case CARTE -> ((Carte) queryResult.getObject(1, mapOraObjType)).display();
                     case ADRESSE -> ((Adresse) queryResult.getObject(1, mapOraObjType)).display();
                     case CLIENT -> ((Client) queryResult.getObject(1, mapOraObjType)).display();
+                    case ARTICLE -> ((Article) queryResult.getObject(1, mapOraObjType)).display();
+                    case EMPL -> ((Empl) queryResult.getObject(1, mapOraObjType)).display();
+                    case FOURNISSEUR -> ((Fournisseur) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }
     }
