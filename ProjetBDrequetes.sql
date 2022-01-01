@@ -16,19 +16,7 @@ SELECT
 FROM
     fournisseur_o;
 
--- Fournisseur qui n'ont plus de factures a payer
-SELECT
-    *
-FROM
-    fournisseur_o of
-WHERE
-    (
-        SELECT
-            COUNT(*)
-        FROM
-            of.get_factures_a_payer()
-    ) != 0;
-
+    
 -- Requete avec regroupement sur les jobs
 SELECT
     job,
@@ -58,6 +46,22 @@ ORDER BY
 --    INNER JOIN adresse_o oa ON oe.adresse = oa;
 
 -- 5 requetes impliquant plus de 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
+
+-- Fournisseur dont les factures que nous avons recues ont ete toutes payees
+SELECT
+    o.siret AS siret
+FROM
+    fournisseur_o o
+    LEFT JOIN TABLE (
+        SELECT
+            b.get_factures_a_payer()
+        FROM
+            fournisseur_o b
+        WHERE
+            b.siret = o.siret
+    )             t ON o.siret = TREAT(value(t) AS facturerecue_t).fournisseur.siret
+WHERE
+    TREAT(value(t) AS facturerecue_t).fournisseur.siret IS NULL;
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
