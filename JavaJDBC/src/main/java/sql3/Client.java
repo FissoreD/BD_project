@@ -117,12 +117,16 @@ public class Client implements SQLData {
     public String displayInfoAdresseClientFromRef() throws SQLException {
         Ref refAdresse1 = this.getRefAdresse();
         Adresse adresse1 = (Adresse) refAdresse1.getObject();
-        return "Adresse du client = " + adresse1.toString();
+        return adresse1.toString();
     }
 
     public String displayInfoCarteClientFromRef() throws SQLException {
-        Ref refCarte1 = this.getRefCarte();
-        Carte carte1 = (Carte) refCarte1.getObject();
-        return "Type carte du client = " + carte1.getNom();
+        String carte_type = "Ce client n'a pas de carte";
+        if (refCarte != null) {
+            Ref refCarte1 = this.getRefCarte();
+            Carte carte1 = (Carte) refCarte1.getObject();
+            carte_type = carte1.getNom();
+        }
+        return carte_type;
     }
 }

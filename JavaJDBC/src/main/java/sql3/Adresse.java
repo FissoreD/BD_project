@@ -128,4 +128,12 @@ public class Adresse implements SQLData {
                         }
                         """, pays, ville, codepostal, rue, numero);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "%d, rue %s, %s",
+                numero, rue, ville
+        );
+    }
 }
