@@ -158,9 +158,11 @@ WHERE
 -- Requetes de suppression 
 -- 2 requetes impliquant 1 table
 
+-- ici on sait que le client 7 n'a ni de carte ni de facture
 DELETE FROM client_o
 WHERE id = 7;
 
+-- ici on sait que ces cartes ne sont affectees a aucun client
 DELETE FROM carte_o
 WHERE remise > 0.35;
 

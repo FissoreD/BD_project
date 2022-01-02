@@ -698,12 +698,7 @@ BEGIN
             siret = 1234
     ) VALUES ( article3 );
 
-    SELECT
-        deref(fact_recue1ref)
-    INTO fact_recue1
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue1ref, fact_recue1);
     fact_recue1.addligneticket(ligne_ticket1);
     fact_recue1.addligneticket(ligne_ticket2);
     fact_recue1.addligneticket(ligne_ticket3);
@@ -723,12 +718,7 @@ BEGIN
             siret = 1234
     ) VALUES ( article4 );
 
-    SELECT
-        deref(fact_recue2ref)
-    INTO fact_recue2
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue2ref, fact_recue2);
     fact_recue2.addligneticket(ligne_ticket4);
     INSERT INTO ligneticket_o lt VALUES (
         5,
@@ -746,12 +736,7 @@ BEGIN
             siret = 5050
     ) VALUES ( article5 );
 
-    SELECT
-        deref(fact_recue3ref)
-    INTO fact_recue3
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue3ref, fact_recue3);
     fact_recue3.addligneticket(ligne_ticket5);
     INSERT INTO ligneticket_o lt VALUES (
         6,
@@ -769,12 +754,7 @@ BEGIN
             siret = 4567
     ) VALUES ( article6 );
 
-    SELECT
-        deref(fact_recue4ref)
-    INTO fact_recue4
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue4ref, fact_recue4);
     fact_recue4.addligneticket(ligne_ticket6);
     INSERT INTO ligneticket_o lt VALUES (
         7,
@@ -792,12 +772,7 @@ BEGIN
             siret = 4567
     ) VALUES ( article7 );
 
-    SELECT
-        deref(fact_recue5ref)
-    INTO fact_recue5
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue5ref, fact_recue5);
     fact_recue5.addligneticket(ligne_ticket7);
     INSERT INTO ligneticket_o lt VALUES (
         8,
@@ -815,12 +790,7 @@ BEGIN
             siret = 4567
     ) VALUES ( article8 );
 
-    SELECT
-        deref(fact_recue6ref)
-    INTO fact_recue6
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue6ref, fact_recue6);
     fact_recue6.addligneticket(ligne_ticket8);
     INSERT INTO ligneticket_o lt VALUES (
         9,
@@ -838,12 +808,7 @@ BEGIN
             siret = 1919
     ) VALUES ( article9 );
 
-    SELECT
-        deref(fact_recue7ref)
-    INTO fact_recue7
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue7ref, fact_recue7);
     fact_recue7.addligneticket(ligne_ticket9);
     INSERT INTO ligneticket_o lt VALUES (
         10,
@@ -861,12 +826,7 @@ BEGIN
             siret = 1919
     ) VALUES ( article10 );
 
-    SELECT
-        deref(fact_recue8ref)
-    INTO fact_recue8
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue8ref, fact_recue8);
     fact_recue8.addligneticket(ligne_ticket10);
     INSERT INTO ligneticket_o lt VALUES (
         11,
@@ -884,12 +844,7 @@ BEGIN
             siret = 9874
     ) VALUES ( article11 );
 
-    SELECT
-        deref(fact_recue9ref)
-    INTO fact_recue9
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue9ref, fact_recue9);
     fact_recue9.addligneticket(ligne_ticket11);
     INSERT INTO ligneticket_o lt VALUES (
         12,
@@ -955,12 +910,7 @@ BEGIN
             siret = 9874
     ) VALUES ( article15 );
 
-    SELECT
-        deref(fact_recue10ref)
-    INTO fact_recue10
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_recue10ref, fact_recue10);
     fact_recue10.addligneticket(ligne_ticket12);
     fact_recue10.addligneticket(ligne_ticket13);
     fact_recue10.addligneticket(ligne_ticket14);
@@ -1055,40 +1005,15 @@ BEGIN
         NULL
     ) RETURNING ref(c) INTO client10;
 
-    SELECT
-        deref(carte1)
-    INTO carte1dr
-    FROM
-        dual;
-
+    utl_ref.select_object(carte1, carte1dr);
     carte1dr.addclient(client1);
-    SELECT
-        deref(carte2)
-    INTO carte2dr
-    FROM
-        dual;
-
+    utl_ref.select_object(carte2, carte2dr);
     carte2dr.addclient(client2);
-    SELECT
-        deref(carte3)
-    INTO carte3dr
-    FROM
-        dual;
-
+    utl_ref.select_object(carte3, carte3dr);
     carte3dr.addclient(client3);
-    SELECT
-        deref(carte4)
-    INTO carte4dr
-    FROM
-        dual;
-
+    utl_ref.select_object(carte4, carte4dr);
     carte4dr.addclient(client4);
-    SELECT
-        deref(carte5)
-    INTO carte5dr
-    FROM
-        dual;
-
+    utl_ref.select_object(carte5, carte5dr);
     carte5dr.addclient(client5);
     carte5dr.addclient(client6);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(11, 1, listrefligneticket_t(), 'autre', employe1,
@@ -1102,12 +1027,7 @@ BEGIN
         fact_emise1ref
     ) RETURNING ref(lt) INTO ligne_ticket16;
 
-    SELECT
-        deref(fact_emise1ref)
-    INTO fact_emise1
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_emise1ref, fact_emise1);
     fact_emise1.addligneticket(ligne_ticket16);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
                                                      carte2, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021',
@@ -1127,12 +1047,7 @@ BEGIN
         fact_emise2ref
     ) RETURNING ref(lt) INTO ligne_ticket18;
 
-    SELECT
-        deref(fact_emise2ref)
-    INTO fact_emise2
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_emise2ref, fact_emise2);
     fact_emise2.addligneticket(ligne_ticket17);
     fact_emise2.addligneticket(ligne_ticket18);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1,
@@ -1146,12 +1061,7 @@ BEGIN
         fact_emise3ref
     ) RETURNING ref(lt) INTO ligne_ticket19;
 
-    SELECT
-        deref(fact_emise3ref)
-    INTO fact_emise3
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_emise3ref, fact_emise3);
     fact_emise3.addligneticket(ligne_ticket19);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1,
                                                      NULL, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-01-2022',
@@ -1164,12 +1074,7 @@ BEGIN
         fact_emise4ref
     ) RETURNING ref(lt) INTO ligne_ticket20;
 
-    SELECT
-        deref(fact_emise4ref)
-    INTO fact_emise4
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_emise4ref, fact_emise4);
     fact_emise4.addligneticket(ligne_ticket20);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(15, 1, listrefligneticket_t(), 'autre', employe2,
                                                      NULL, TO_DATE('25-10-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-11-2021',
@@ -1182,12 +1087,7 @@ BEGIN
         fact_emise5ref
     ) RETURNING ref(lt) INTO ligne_ticket21;
 
-    SELECT
-        deref(fact_emise5ref)
-    INTO fact_emise5
-    FROM
-        dual;
-
+    utl_ref.select_object(fact_emise5ref, fact_emise5);
     fact_emise5.addligneticket(ligne_ticket21);
     /**/
 END;
