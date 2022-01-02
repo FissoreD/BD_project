@@ -1099,7 +1099,7 @@ BEGIN
         dual;
 
     fact_emise1.addligneticket(ligne_ticket16);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2, carte1,
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2, carte2,
                                                      TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise2ref;
 
@@ -1125,7 +1125,7 @@ BEGIN
 
     fact_emise2.addligneticket(ligne_ticket17);
     fact_emise2.addligneticket(ligne_ticket18);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1, carte2,
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1, carte5,
                                                      TO_DATE('25-12-2021', 'DD-MM-YYYY'), client5, TO_DATE('20-11-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise3ref;
 
