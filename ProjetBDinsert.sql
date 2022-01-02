@@ -182,6 +182,18 @@ BEGIN
         listrefclients_t()
     ) RETURNING ref(c) INTO carte5;
 
+    INSERT INTO carte_o c VALUES (
+        'VIP',
+        0.40,
+        listrefclients_t()
+    );
+
+    INSERT INTO carte_o c VALUES (
+        'VIP+',
+        0.50,
+        listrefclients_t()
+    );
+
     INSERT INTO adresse_o ad VALUES (
         'France',
         'Biot',

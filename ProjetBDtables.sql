@@ -37,7 +37,7 @@ CREATE TABLE client_o OF client_t (
 
 CREATE TABLE carte_o OF carte_t (
     CONSTRAINT pk_carte_o_nom PRIMARY KEY ( nom ),
-    CONSTRAINT chk_carte_o_nom CHECK ( nom IN ( 'bronze', 'silver', 'gold', 'platinum', 'diamond' ) ),
+    CONSTRAINT chk_carte_o_nom CHECK ( nom IN ( 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'VIP', 'VIP+' ) ),
     CONSTRAINT nnl_carte_o_remise CHECK ( remise IS NOT NULL ),
     CONSTRAINT chk_carte_o_remise CHECK ( remise BETWEEN 0.01 AND 0.95 )
 )

@@ -113,7 +113,7 @@ WHERE
 -- 2 requetes impliquant plus de 2 tables
 
     -- tous les articles dans le catalogue du fournisseur 1234
-    -- subissent 2% d'augementation de prix
+    -- subissent 2% d'augmentation de prix
 UPDATE article_o art
 SET
     art.prix_vente = art.prix_vente * 1.02
@@ -157,6 +157,13 @@ WHERE
 
 -- Requetes de suppression 
 -- 2 requetes impliquant 1 table
+
+DELETE FROM client_o
+WHERE id = 7;
+
+DELETE FROM carte_o
+WHERE remise > 0.35;
+
 -- 2 requetes impliquant 2 tables
 -- 2 requetes impliquant plus de 2 tables
 
