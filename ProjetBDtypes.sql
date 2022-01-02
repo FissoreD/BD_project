@@ -111,7 +111,13 @@ CREATE OR REPLACE TYPE carte_t AS OBJECT (
     nom     VARCHAR2(30),
     remise  NUMBER,
     clients listrefclients_t,
-    MAP MEMBER FUNCTION compcarte RETURN NUMBER
+    MAP MEMBER FUNCTION compcarte RETURN NUMBER,
+    MEMBER PROCEDURE addclient (
+           client REF client_t
+       ),
+    MEMBER PROCEDURE deleteclient (
+           client REF client_t
+       )
 );
 /
 

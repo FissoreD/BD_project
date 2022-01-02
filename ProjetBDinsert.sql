@@ -146,6 +146,11 @@ DECLARE
     carte3          REF carte_t;
     carte4          REF carte_t;
     carte5          REF carte_t;
+    carte1dr        carte_t;
+    carte2dr        carte_t;
+    carte3dr        carte_t;
+    carte4dr        carte_t;
+    carte5dr        carte_t;
 BEGIN
     INSERT INTO carte_o c VALUES (
         'bronze',
@@ -944,13 +949,14 @@ BEGIN
     fact_recue10.addligneticket(ligne_ticket13);
     fact_recue10.addligneticket(ligne_ticket14);
     fact_recue10.addligneticket(ligne_ticket15);
+
     INSERT INTO client_o c VALUES (
         1,
         'Croesi',
         'Elena',
         ad12,
         TO_DATE('07-07-1999', 'DD-MM-YYYY'),
-        NULL
+        carte1
     ) RETURNING ref(c) INTO client1;
 
     INSERT INTO client_o c VALUES (
@@ -959,7 +965,7 @@ BEGIN
         'Enzo',
         ad12,
         TO_DATE('07-07-1996', 'DD-MM-YYYY'),
-        NULL
+        carte2
     ) RETURNING ref(c) INTO client2;
 
     INSERT INTO client_o c VALUES (
@@ -968,7 +974,7 @@ BEGIN
         'Julie',
         ad9,
         TO_DATE('25-12-1996', 'DD-MM-YYYY'),
-        NULL
+        carte3
     ) RETURNING ref(c) INTO client3;
 
     INSERT INTO client_o c VALUES (
@@ -977,7 +983,7 @@ BEGIN
         'Xavier',
         ad13,
         TO_DATE('10-09-1970', 'DD-MM-YYYY'),
-        NULL
+        carte4
     ) RETURNING ref(c) INTO client4;
 
     INSERT INTO client_o c VALUES (
@@ -986,7 +992,7 @@ BEGIN
         'Pierre',
         ad14,
         TO_DATE('24-12-1985', 'DD-MM-YYYY'),
-        NULL
+        carte5
     ) RETURNING ref(c) INTO client5;
 
     INSERT INTO client_o c VALUES (
@@ -995,7 +1001,7 @@ BEGIN
         'Sophie',
         ad15,
         TO_DATE('07-01-1965', 'DD-MM-YYYY'),
-        NULL
+        carte5
     ) RETURNING ref(c) INTO client6;
 
     INSERT INTO client_o c VALUES (
@@ -1033,6 +1039,47 @@ BEGIN
         TO_DATE('12-10-1998', 'DD-MM-YYYY'),
         NULL
     ) RETURNING ref(c) INTO client10;
+
+    SELECT
+        deref(carte1)
+    INTO carte1dr
+    FROM
+        dual;
+
+    carte1dr.addclient(client1);
+
+    SELECT
+        deref(carte2)
+    INTO carte2dr
+    FROM
+        dual;
+
+    carte2dr.addclient(client2);
+
+    SELECT
+        deref(carte3)
+    INTO carte3dr
+    FROM
+        dual;
+
+    carte3dr.addclient(client3);
+
+    SELECT
+        deref(carte4)
+    INTO carte4dr
+    FROM
+        dual;
+
+    carte4dr.addclient(client4);
+
+    SELECT
+        deref(carte5)
+    INTO carte5dr
+    FROM
+        dual;
+
+    carte5dr.addclient(client5);
+    carte5dr.addclient(client6);
 
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(11, 1, listrefligneticket_t(), 'autre', employe1, carte1,
                                                      TO_DATE('22-12-2021', 'DD-MM-YYYY'), client1, TO_DATE('31-12-2021',

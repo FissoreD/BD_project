@@ -54,6 +54,43 @@ CREATE OR REPLACE TYPE BODY carte_t AS
     BEGIN
         RETURN remise;
     END;
+    MEMBER PROCEDURE addclient (
+        client REF client_t
+    ) IS
+    BEGIN
+        INSERT INTO TABLE (
+            SELECT
+                ot.clients
+            FROM
+                carte_o ot
+            WHERE
+                ot.nom = self.nom
+        ) VALUES ( client );
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteclient (
+        client REF client_t
+    ) IS
+    BEGIN
+        DELETE FROM TABLE (
+            SELECT
+                ot.clients
+            FROM
+                carte_o ot
+            WHERE
+                ot.nom = self.nom
+        ) le
+        WHERE
+            le.column_value = client;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
 
 END;
 /
