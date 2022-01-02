@@ -5,7 +5,6 @@ DECLARE
     article      article_t;
     parentticket ticket_t;
     ligneticket  REF ligneticket_t;
-    quantite_exception EXCEPTION;
 BEGIN
     SELECT
         deref(:new.article)
@@ -67,6 +66,28 @@ BEGIN
             quantite = quantite - :new.quantite
         WHERE
             codebarre = article.codebarre;
+
+    END IF;
+
+END;
+/
+-- on peut supprimer un client que s'il ne possède pas de facture de moins de 10 ans
+CREATE OR REPLACE TRIGGER delete_facture_checker BEFORE
+    DELETE ON ticket_o
+    FOR EACH ROW
+DECLARE
+    client_id NUMBER := :old.id;
+    today     DATE;
+BEGIN
+    SELECT
+        sysdate
+    INTO today
+    FROM
+        dual;
+
+    IF today - :old.dateemission <= 3650 THEN
+        raise_application_error(-20001, 'On ne peut pas supprimer ce client parce que il y a une facture emise le '
+                                        || :old.dateemission);
 
     END IF;
 

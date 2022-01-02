@@ -167,4 +167,46 @@ WHERE remise > 0.35;
 -- 2 requetes impliquant 2 tables
 -- 2 requetes impliquant plus de 2 tables
 
+-- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
+-- 1. on met à jour donc listrefclients_t dans la carte du client 1
+-- 2. on supprime les factures emises sur ce client
+-- (Attention au trigger delete_facture_checker car on ne peut pas supprimer des factures de moins de 10 ans)
+DECLARE
+    ref_client REF client_t;
+    carte      carte_t;
+    ref_fact_e setfactureemise_t;
+    client_id  NUMBER := 1;
+BEGIN
+    SELECT
+        deref(v.carte),
+        ref(v)
+    INTO
+        carte,
+        ref_client
+    FROM
+        client_o v
+    WHERE
+        v.id = client_id;
+
+    carte.deleteclient(ref_client);
+    DELETE FROM client_o c
+    WHERE
+        id = 1;
+
+    SELECT
+        CAST(COLLECT(TREAT(value(t) AS factureemise_t)) AS setfactureemise_t)
+    INTO ref_fact_e
+    FROM
+        ticket_o t
+    WHERE
+        TREAT(value(t) AS factureemise_t).client IS DANGLING;
+
+    FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
+        DELETE FROM ticket_o t
+        WHERE
+            value(t) = ref_fact_e(i);
+    END LOOP;
+
+END;
+/
 -- Here code

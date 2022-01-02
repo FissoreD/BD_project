@@ -1,5 +1,7 @@
 SET SERVEROUTPUT ON
 
+ALTER TABLE ticket_o DISABLE ALL TRIGGERS;
+
 DELETE FROM adresse_o;
 
 DELETE FROM fournisseur_o;
@@ -15,6 +17,8 @@ DELETE FROM ligneticket_o;
 DELETE FROM article_o;
 
 DELETE FROM carte_o;
+
+ALTER TABLE ticket_o ENABLE ALL TRIGGERS;
 
 DECLARE
     ad1             REF adresse_t;
@@ -471,44 +475,44 @@ BEGIN
         NULL
     ) RETURNING ref(e) INTO employe6;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(1, 0, listrefligneticket_t(), 'autre', NULL, carte1,
-                                                   TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(1, 0, listrefligneticket_t(), 'autre', NULL,
+                                                   carte1, TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 0) ) RETURNING ref(o) INTO fact_recue1ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(2, 0, listrefligneticket_t(), 'espece', NULL, carte2,
-                                                   TO_DATE('20-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2022',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(2, 0, listrefligneticket_t(), 'espece', NULL,
+                                                   carte2, TO_DATE('20-12-2021', 'DD-MM-YYYY'), fourn1, TO_DATE('31-12-2022',
                'DD-MM-YYYY'), 0) ) RETURNING ref(o) INTO fact_recue2ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(3, 0, listrefligneticket_t(), 'espece', NULL, NULL,
-                                                   TO_DATE('30-12-2021', 'DD-MM-YYYY'), fourn2, TO_DATE('31-12-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(3, 0, listrefligneticket_t(), 'espece', NULL,
+                                                   NULL, TO_DATE('30-12-2021', 'DD-MM-YYYY'), fourn2, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(o) INTO fact_recue3ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(4, 0, listrefligneticket_t(), 'cb', NULL, NULL,
-                                                   TO_DATE('15-12-2020', 'DD-MM-YYYY'), fourn3, TO_DATE('27-02-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(4, 0, listrefligneticket_t(), 'cb', NULL,
+                                                   NULL, TO_DATE('15-12-2020', 'DD-MM-YYYY'), fourn3, TO_DATE('27-02-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(o) INTO fact_recue4ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(5, 0, listrefligneticket_t(), 'cb', NULL, NULL,
-                                                   TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn3, TO_DATE('31-12-2025',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(5, 0, listrefligneticket_t(), 'cb', NULL,
+                                                   NULL, TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn3, TO_DATE('31-12-2025',
                'DD-MM-YYYY'), 0) ) RETURNING ref(o) INTO fact_recue5ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(6, 0, listrefligneticket_t(), 'cb', NULL, carte3,
-                                                   TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn3, TO_DATE('31-12-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(6, 0, listrefligneticket_t(), 'cb', NULL,
+                                                   carte3, TO_DATE('15-12-2021', 'DD-MM-YYYY'), fourn3, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 0) ) RETURNING ref(o) INTO fact_recue6ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(7, 0, listrefligneticket_t(), 'cheque', NULL, carte4,
-                                                   TO_DATE('15-10-2021', 'DD-MM-YYYY'), fourn4, TO_DATE('30-11-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(7, 0, listrefligneticket_t(), 'cheque', NULL,
+                                                   carte4, TO_DATE('15-10-2021', 'DD-MM-YYYY'), fourn4, TO_DATE('30-11-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(o) INTO fact_recue7ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(8, 0, listrefligneticket_t(), 'cheque', NULL, carte2,
-                                                   TO_DATE('10-08-2021', 'DD-MM-YYYY'), fourn4, TO_DATE('31-12-2021',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(8, 0, listrefligneticket_t(), 'cheque', NULL,
+                                                   carte2, TO_DATE('10-08-2021', 'DD-MM-YYYY'), fourn4, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(o) INTO fact_recue8ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(9, 0, listrefligneticket_t(), 'cheque', NULL, NULL,
-                                                   TO_DATE('30-12-2021', 'DD-MM-YYYY'), fourn5, TO_DATE('31-12-2023',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(9, 0, listrefligneticket_t(), 'cheque', NULL,
+                                                   NULL, TO_DATE('30-12-2021', 'DD-MM-YYYY'), fourn5, TO_DATE('31-12-2023',
                'DD-MM-YYYY'), 0) ) RETURNING ref(o) INTO fact_recue9ref;
 
-    INSERT INTO ticket_o o VALUES ( facturerecue_t(10, 0, listrefligneticket_t(), 'cheque', NULL, NULL,
-                                                   TO_DATE('25-12-2018', 'DD-MM-YYYY'), fourn5, TO_DATE('31-12-2020',
+    INSERT INTO ticket_o o VALUES ( facturerecue_t(10, 0, listrefligneticket_t(), 'cheque', NULL,
+                                                   NULL, TO_DATE('25-12-2018', 'DD-MM-YYYY'), fourn5, TO_DATE('31-12-2020',
                'DD-MM-YYYY'), 1) ) RETURNING ref(o) INTO fact_recue10ref;
 
     INSERT INTO article_o a VALUES (
@@ -961,7 +965,6 @@ BEGIN
     fact_recue10.addligneticket(ligne_ticket13);
     fact_recue10.addligneticket(ligne_ticket14);
     fact_recue10.addligneticket(ligne_ticket15);
-
     INSERT INTO client_o c VALUES (
         1,
         'Croesi',
@@ -1059,7 +1062,6 @@ BEGIN
         dual;
 
     carte1dr.addclient(client1);
-
     SELECT
         deref(carte2)
     INTO carte2dr
@@ -1067,7 +1069,6 @@ BEGIN
         dual;
 
     carte2dr.addclient(client2);
-
     SELECT
         deref(carte3)
     INTO carte3dr
@@ -1075,7 +1076,6 @@ BEGIN
         dual;
 
     carte3dr.addclient(client3);
-
     SELECT
         deref(carte4)
     INTO carte4dr
@@ -1083,7 +1083,6 @@ BEGIN
         dual;
 
     carte4dr.addclient(client4);
-
     SELECT
         deref(carte5)
     INTO carte5dr
@@ -1092,10 +1091,9 @@ BEGIN
 
     carte5dr.addclient(client5);
     carte5dr.addclient(client6);
-
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(11, 1, listrefligneticket_t(), 'autre', employe1, carte1,
-                                                     TO_DATE('22-12-2021', 'DD-MM-YYYY'), client1, TO_DATE('31-12-2021',
-               'DD-MM-YYYY'), 0) ) RETURNING ref(fe1) INTO fact_emise1ref;
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(11, 1, listrefligneticket_t(), 'autre', employe1,
+                                                     carte1, TO_DATE('22-12-2005', 'DD-MM-YYYY'), client1, TO_DATE('31-12-2006',
+               'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise1ref;
 
     INSERT INTO ligneticket_o lt VALUES (
         16,
@@ -1111,8 +1109,8 @@ BEGIN
         dual;
 
     fact_emise1.addligneticket(ligne_ticket16);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2, carte2,
-                                                     TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
+                                                     carte2, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise2ref;
 
     INSERT INTO ligneticket_o lt VALUES (
@@ -1137,8 +1135,8 @@ BEGIN
 
     fact_emise2.addligneticket(ligne_ticket17);
     fact_emise2.addligneticket(ligne_ticket18);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1, carte5,
-                                                     TO_DATE('25-12-2021', 'DD-MM-YYYY'), client5, TO_DATE('20-11-2021',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(13, 1, listrefligneticket_t(), 'autre', employe1,
+                                                     carte5, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client5, TO_DATE('20-11-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise3ref;
 
     INSERT INTO ligneticket_o lt VALUES (
@@ -1155,8 +1153,8 @@ BEGIN
         dual;
 
     fact_emise3.addligneticket(ligne_ticket19);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1, NULL,
-                                                     TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-01-2022',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1,
+                                                     NULL, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-01-2022',
                'DD-MM-YYYY'), 0) ) RETURNING ref(fe1) INTO fact_emise4ref;
 
     INSERT INTO ligneticket_o lt VALUES (
@@ -1173,8 +1171,8 @@ BEGIN
         dual;
 
     fact_emise4.addligneticket(ligne_ticket20);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(15, 1, listrefligneticket_t(), 'autre', employe2, NULL,
-                                                     TO_DATE('25-10-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-11-2021',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(15, 1, listrefligneticket_t(), 'autre', employe2,
+                                                     NULL, TO_DATE('25-10-2021', 'DD-MM-YYYY'), client8, TO_DATE('20-11-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise5ref;
 
     INSERT INTO ligneticket_o lt VALUES (
