@@ -9,6 +9,11 @@ FROM
 WHERE
     oc.remise >= 0.2;
 
+-- Articles dont il en reste plus de 3 et qui coutent 50 euros ou moins
+Select nom
+from article_o
+where quantite > 3 and prix_vente <= 50;
+
 -- Nom et prenom de chaque fournisseur
 SELECT
     nom,
@@ -35,6 +40,7 @@ FROM
 WHERE
     oa.numero = 17000
     OR oa.numero = 19000
+    OR oa.numero = 12
 ORDER BY
     value(oa);
 
