@@ -179,6 +179,8 @@ DECLARE
     ligne_ticket26  REF ligneticket_t;
     ligne_ticket27  REF ligneticket_t;
     ligne_ticket28  REF ligneticket_t;
+    ticket1ref      REF ticket_t;
+    ticket1         ticket_t;
     carte1          REF carte_t;
     carte2          REF carte_t;
     carte3          REF carte_t;
@@ -1075,6 +1077,27 @@ BEGIN
 
     utl_ref.select_object(fact_emise5ref, fact_emise5);
     fact_emise5.addligneticket(ligne_ticket21);
+    
+    INSERT INTO ticket_o t VALUES (
+        16,
+        1,
+        listrefligneticket_t(),
+        'cb',
+        employe3ref,
+        carte1,
+        TO_DATE('05-01-2022', 'DD-MM-YYYY')
+    ) RETURN ref(t) INTO ticket1ref;
+     utl_ref.select_object(ticket1ref, ticket1);
+
+    employe3.add_ticket_emis(ticket1ref);
+    INSERT INTO ligneticket_o lt VALUES (
+        22,
+        2,
+        article6ref,
+        ticket1ref
+    ) RETURN ref(lt) INTO ligne_ticket1;
+
+    ticket1.addligneticket(ligne_ticket1);
     /**/
 END;
 /

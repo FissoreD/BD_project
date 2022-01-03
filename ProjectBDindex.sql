@@ -1,3 +1,15 @@
+drop index ligneticket_o_article;
+drop index ligneticket_o_parentticket;
+drop index idx_tablelistrefclients_nested_table_id_column_value;
+drop index empl_o_adresse;
+drop index idx_tablelistrefticketarticles_nested_table_id_column_value;
+drop index idx_ticket_o_employeemmetteur;
+drop index idx_ticket_o_carte_reduction;
+drop index client_o_adresse;
+drop index idx_client_o_carte;
+drop index idx_fournisseur_o_adresse;
+drop index idx_tablelistrefticketemis_nested_table_id_column_value;
+
 ALTER TABLE ligneticket_o ADD (SCOPE FOR ( article ) IS article_o);
 CREATE INDEX ligneticket_o_article
 ON ligneticket_o(article);
