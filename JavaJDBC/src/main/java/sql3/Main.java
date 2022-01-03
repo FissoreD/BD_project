@@ -3,6 +3,7 @@ package sql3;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Map;
+import java.util.Objects;
 
 public class Main {
 
@@ -55,12 +56,12 @@ public class Main {
     }
 
     private enum Types{
-        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, TICKET;
-        public final String className = this.toString() == "LIGNETICKET" ? "LigneTicket" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
+        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, FACTUREEMISE, FACTURERECUE, TICKET;
+        public final String className = Objects.equals(this.toString(), "LIGNETICKET") ? "LigneTicket" : this.toString().equals("FACTUREEMISE") ? "FactureEmise" : this.toString().equals("FACTURERECUE") ? "FactureRecue" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         public final String typePath = path2 + "." + this + "_T";
 
         public void loop() throws SQLException, IOException {
-            String query = String.format("SELECT value(c) FROM %s_o c", this);
+            String query = String.format("SELECT value(c) FROM %s_o c", this == FACTUREEMISE ? TICKET : this == FACTURERECUE ? TICKET : this);
 
             ResultSet queryResult = stmt.executeQuery(query);
 
@@ -73,8 +74,10 @@ public class Main {
                     case ARTICLE -> ((Article) queryResult.getObject(1, mapOraObjType)).display();
                     case EMPL -> ((Empl) queryResult.getObject(1, mapOraObjType)).display();
                     case FOURNISSEUR -> ((Fournisseur) queryResult.getObject(1, mapOraObjType)).display();
-                    case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
+                    //case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
                     case LIGNETICKET -> ((LigneTicket) queryResult.getObject(1, mapOraObjType)).display();
+                    //case FACTUREEMISE -> ((FactureEmise) queryResult.getObject(1, mapOraObjType)).display();
+                    //case FACTURERECUE -> ((FactureRecue) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }
     }
