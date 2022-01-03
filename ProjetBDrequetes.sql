@@ -167,10 +167,22 @@ DELETE FROM carte_o
 WHERE remise > 0.35;
 
 -- 2 requetes impliquant 2 tables
+
+-- on supprime un carte et supprime le pointeur des clients vers celle-ci
+DELETE FROM carte_o
+WHERE nom = 'gold';
+
+UPDATE client_o clt
+SET
+    clt.carte = null
+WHERE
+    carte is DANGLING;
+
+
 -- 2 requetes impliquant plus de 2 tables
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
--- 1. on met à jour donc listrefclients_t dans la carte du client 1
+-- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
 -- 2. on supprime les factures emises sur ce client
 -- (Attention au trigger delete_facture_checker car on ne peut pas supprimer des factures de moins de 10 ans)
 DECLARE
