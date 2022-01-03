@@ -73,7 +73,7 @@ public class Main {
                     case ARTICLE -> ((Article) queryResult.getObject(1, mapOraObjType)).display();
                     case EMPL -> ((Empl) queryResult.getObject(1, mapOraObjType)).display();
                     case FOURNISSEUR -> ((Fournisseur) queryResult.getObject(1, mapOraObjType)).display();
-                    //case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
+                    case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
                     case LIGNETICKET -> ((LigneTicket) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }

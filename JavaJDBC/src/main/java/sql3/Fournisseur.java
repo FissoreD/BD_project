@@ -124,4 +124,12 @@ public class Fournisseur implements SQLData {
         System.out.println(">");
     }
 
+    @Override
+    public String toString() {
+        return "Fournisseur{" +
+                "siret=" + siret +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                '}';
+    }
 }
