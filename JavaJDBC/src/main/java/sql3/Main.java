@@ -56,13 +56,22 @@ public class Main {
     }
 
     private enum Types{
-        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, FACTUREEMISE, FACTURERECUE, TICKET;
+        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, TICKET, FACTUREEMISE, FACTURERECUE;
         public final String className = Objects.equals(this.toString(), "LIGNETICKET") ? "LigneTicket" : this.toString().equals("FACTUREEMISE") ? "FactureEmise" : this.toString().equals("FACTURERECUE") ? "FactureRecue" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         public final String typePath = path2 + "." + this + "_T";
 
         public void loop() throws SQLException, IOException {
-            String query = String.format("SELECT value(c) FROM %s_o c", this == FACTUREEMISE ? TICKET : this == FACTURERECUE ? TICKET : this);
 
+            String query = String.format("SELECT value(c) FROM %s_o c", this);
+            if (this == FACTUREEMISE){
+                query =  "SELECT value(c) FROM ticket_o c WHERE value(c) IS OF ( factureemise_t )";
+            }
+            if (this == FACTURERECUE) {
+                query =  "SELECT value(c) FROM ticket_o c WHERE value(c) IS OF ( facturerecue_t )";
+            }
+            if (this == TICKET) {
+                query = "SELECT value(c) FROM ticket_o c WHERE NOT value(c) IS OF ( factureemise_t ) AND NOT value(c) IS OF ( facturerecue_t )";
+            }
             ResultSet queryResult = stmt.executeQuery(query);
 
             System.out.printf("*************** INFOS %s ***************%n", this);
@@ -74,10 +83,10 @@ public class Main {
                     case ARTICLE -> ((Article) queryResult.getObject(1, mapOraObjType)).display();
                     case EMPL -> ((Empl) queryResult.getObject(1, mapOraObjType)).display();
                     case FOURNISSEUR -> ((Fournisseur) queryResult.getObject(1, mapOraObjType)).display();
-                    //case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
+                    case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
                     case LIGNETICKET -> ((LigneTicket) queryResult.getObject(1, mapOraObjType)).display();
-                    //case FACTUREEMISE -> ((FactureEmise) queryResult.getObject(1, mapOraObjType)).display();
-                    //case FACTURERECUE -> ((FactureRecue) queryResult.getObject(1, mapOraObjType)).display();
+                    case FACTUREEMISE -> ((FactureEmise) queryResult.getObject(1, mapOraObjType)).display();
+                    case FACTURERECUE -> ((FactureRecue) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }
     }

@@ -7,6 +7,8 @@ public class FactureEmise extends Ticket{
     private Date datelimite;
     private int payeounon;
 
+    public FactureEmise(){}
+
     public FactureEmise(String sql_type, int id, int estvente, Array ligneticket, String paiement, Ref employeemmetteur, Ref carte_reduction, Date dateemission, Ref client, Date datelimite, int payeounon) {
         super(sql_type, id, estvente, ligneticket, paiement, employeemmetteur, carte_reduction, dateemission);
         this.client = client;
