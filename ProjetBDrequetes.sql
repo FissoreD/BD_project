@@ -10,9 +10,13 @@ WHERE
     oc.remise >= 0.2;
 
 -- Articles dont il en reste plus de 3 et qui coutent 50 euros ou moins
-Select nom
-from article_o
-where quantite > 3 and prix_vente <= 50;
+SELECT
+    nom
+FROM
+    article_o
+WHERE
+        quantite > 3
+    AND prix_vente <= 50;
 
 -- Nom et prenom de chaque fournisseur
 SELECT
@@ -43,6 +47,14 @@ WHERE
     OR oa.numero = 12
 ORDER BY
     value(oa);
+    
+-- La date limite de toutes les factures recues
+SELECT
+    TREAT(value(ot) AS facturerecue_t).datelimite as datelimite
+FROM
+    ticket_o ot
+WHERE
+    value(ot) IS OF ( facturerecue_t );
 
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
@@ -166,23 +178,26 @@ WHERE
 
 -- ici on sait que le client 7 n'a ni de carte ni de facture
 DELETE FROM client_o
-WHERE id = 7;
+WHERE
+    id = 7;
 
 -- ici on sait que ces cartes ne sont affectees a aucun client
 DELETE FROM carte_o
-WHERE remise > 0.35;
+WHERE
+    remise > 0.35;
 
 -- 2 requetes impliquant 2 tables
 
 -- on supprime un carte et supprime le pointeur des clients vers celle-ci
 DELETE FROM carte_o
-WHERE nom = 'gold';
+WHERE
+    nom = 'gold';
 
 UPDATE client_o clt
 SET
-    clt.carte = null
+    clt.carte = NULL
 WHERE
-    carte is DANGLING;
+    carte IS DANGLING;
 
 
 -- 2 requetes impliquant plus de 2 tables
@@ -219,14 +234,16 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS DANGLING;
+        TREAT(value(t) AS factureemise_t).client IS
+dangling;
 
-    FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
-        DELETE FROM ticket_o t
-        WHERE
-            value(t) = ref_fact_e(i);
-    END LOOP;
+FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
+    DELETE FROM ticket_o t
+    WHERE
+        value(t) = ref_fact_e(i);
 
-END;
+END LOOP;
+
+end;
 /
 -- Here code
