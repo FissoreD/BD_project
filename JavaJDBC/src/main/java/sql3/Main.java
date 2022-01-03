@@ -12,6 +12,12 @@ public class Main {
     private final static  String adressIP = "144.21.67.201";
     private final static String serviceName = "pdbm1inf.631174089.oraclecloud.internal";
     private final static int numPort = 1521;
+    private final static String username2 = "Venturelli1I2122";
+    private final static String password2 = "Venturelli1I212201";
+    private final static String path2 = "VENTURELLI1I2122";
+    private final static  String adressIP2 = "134.59.152.120";
+    private final static String serviceName2 = "pdbm1info.unice.fr";
+    private final static int numPort2 = 443;
     private static Map<String, Class<?>> mapOraObjType;
     private static Statement stmt;
 
@@ -29,8 +35,8 @@ public class Main {
                                   (SERVER = DEDICATED)\r
                                   (SERVICE_NAME = %s)\r
                                 )\r
-                              )""", adressIP,numPort, serviceName),
-                    username, password);
+                              )""", adressIP2, numPort2, serviceName2),
+                    username2, password2);
 
             stmt = conn.createStatement();
 
@@ -49,9 +55,11 @@ public class Main {
     }
 
     private enum Types{
-        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, TICKET, ARTICLE;
         public final String className = this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
-        public final String typePath = path + "." + this + "_T";
+        ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, TICKET;
+        public final String className = this.toString() == "LIGNETICKET" ? "LigneTicket" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
+        public final String typePath = path2 + "." + this + "_T";
+
         public void loop() throws SQLException, IOException {
             String query = String.format("SELECT value(c) FROM %s_o c", this);
 
@@ -66,6 +74,8 @@ public class Main {
                     case ARTICLE -> ((Article) queryResult.getObject(1, mapOraObjType)).display();
                     case EMPL -> ((Empl) queryResult.getObject(1, mapOraObjType)).display();
                     case FOURNISSEUR -> ((Fournisseur) queryResult.getObject(1, mapOraObjType)).display();
+                    //case TICKET -> ((Ticket) queryResult.getObject(1, mapOraObjType)).display();
+                    case LIGNETICKET -> ((LigneTicket) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }
     }
