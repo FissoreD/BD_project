@@ -1,7 +1,3 @@
-ALTER TABLE article_o ADD (SCOPE FOR ( achat ) IS ticket_o);
-CREATE INDEX idx_article_o_achat
-ON article_o(achat);
-
 ALTER TABLE ligneticket_o ADD (SCOPE FOR ( article ) IS article_o);
 CREATE INDEX ligneticket_o_article
 ON ligneticket_o(article);
@@ -53,6 +49,6 @@ ALTER TABLE fournisseur_o ADD (SCOPE FOR ( adresse ) IS adresse_o);
 CREATE INDEX idx_fournisseur_o_adresse
 ON fournisseur_o(adresse);
 
-ALTER TABLE tablelistreffournisseurarticles ADD (SCOPE FOR ( column_value ) IS article_o);
-CREATE UNIQUE INDEX idx_tablelistreffournisseurarticles_nested_table_id_column_value
-ON tablelistreffournisseurarticles (nested_table_id, column_value);
+ALTER TABLE tablelistrefticketemis ADD (SCOPE FOR ( column_value ) IS ticket_o);
+CREATE UNIQUE INDEX idx_tablelistrefticketemis_nested_table_id_column_value
+ON tablelistrefticketemis (nested_table_id, column_value);

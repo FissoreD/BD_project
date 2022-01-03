@@ -15,18 +15,26 @@ BEGIN
         siret = 1234;
 
     factures_recues := fourn1.get_factures_a_payer;
-    factures_emises := client_t.get_factures_a_encaisser(1);
     FOR i IN factures_recues.first..factures_recues.last LOOP
         dbms_output.put_line('La facture '
                              || factures_recues(i).id
                              || ' est a payer');
     END LOOP;
 
-    FOR i IN factures_emises.first..factures_emises.last LOOP
-        dbms_output.put_line('La facture '
-                             || factures_emises(i).id
-                             || ' est a encaisser');
-    END LOOP;
+    SELECT
+        value(f)
+    INTO client1
+    FROM
+        client_o f
+    WHERE
+        id = 1;
+
+--    factures_emises := client1.get_factures_a_encaisser();
+--    FOR i IN factures_emises.first..factures_emises.last LOOP
+--        dbms_output.put_line('La facture '
+--                             || factures_emises(i).id
+--                             || ' est a encaisser');
+--    END LOOP;
 
 END;
 /
@@ -45,7 +53,7 @@ BEGIN
 
     str := res1.print_ticket();
     dbms_output.put_line(str);
-    
+    dbms_output.put_line('');
     SELECT
         value(f)
     INTO res1

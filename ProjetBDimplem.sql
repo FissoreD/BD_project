@@ -18,6 +18,67 @@ CREATE OR REPLACE TYPE BODY article_t AS
                || codebarre;
     END;
 
+    MEMBER PROCEDURE add_ligne_ticket (
+        ticket REF ligneticket_t
+    ) IS
+    BEGIN
+        INSERT INTO TABLE (
+            SELECT
+                ot.ligne_ticket_avec_this
+            FROM
+                article_o ot
+            WHERE
+                ot.codebarre = self.codebarre
+        ) VALUES ( ticket );
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE delete_ligne_ticket (
+        ticket REF ligneticket_t
+    ) IS
+    BEGIN
+        DELETE FROM TABLE (
+            SELECT
+                ot.ligne_ticket_avec_this
+            FROM
+                article_o ot
+            WHERE
+                ot.codebarre = self.codebarre
+        ) le
+        WHERE
+            le.column_value = ticket;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE update_ligne_ticket (
+        ticket1 REF ligneticket_t,
+        ticket2 REF ligneticket_t
+    ) IS
+    BEGIN
+        UPDATE TABLE (
+            SELECT
+                ot.ligne_ticket_avec_this
+            FROM
+                article_o ot
+            WHERE
+                ot.codebarre = self.codebarre
+        ) le
+        SET
+            le.column_value = ticket2
+        WHERE
+            le.column_value = ticket1;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
 END;
 /
 
@@ -29,9 +90,7 @@ CREATE OR REPLACE TYPE BODY client_t AS
                || id;
     END;
 
-    STATIC FUNCTION get_factures_a_encaisser (
-        client_id IN NUMBER
-    ) RETURN setticket_t IS
+    MEMBER FUNCTION get_factures_a_encaisser RETURN setticket_t IS
         res setticket_t;
     BEGIN
         SELECT
@@ -40,10 +99,71 @@ CREATE OR REPLACE TYPE BODY client_t AS
         FROM
             ticket_o f
         WHERE
-                deref(TREAT(value(f) AS factureemise_t).client).id = client_id
+                deref(TREAT(value(f) AS factureemise_t).client).id = self.id
             AND TREAT(value(f) AS factureemise_t).payeounon = 0;
 
         RETURN res;
+    END;
+
+    MEMBER PROCEDURE add_facture (
+        facture REF ticket_t
+    ) IS
+    BEGIN
+        INSERT INTO TABLE (
+            SELECT
+                ot.facture_du_client
+            FROM
+                client_o ot
+            WHERE
+                ot.id = self.id
+        ) VALUES ( facture );
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE delete_facture (
+        facture REF ticket_t
+    ) IS
+    BEGIN
+        DELETE FROM TABLE (
+            SELECT
+                ot.facture_du_client
+            FROM
+                client_o ot
+            WHERE
+                ot.id = self.id
+        ) le
+        WHERE
+            le.column_value = facture;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE update_facture (
+        facture1 REF ticket_t,
+        facture2 REF ticket_t
+    ) IS
+    BEGIN
+        UPDATE TABLE (
+            SELECT
+                ot.facture_du_client
+            FROM
+                client_o ot
+            WHERE
+                ot.id = self.id
+        ) le
+        SET
+            le.column_value = facture2
+        WHERE
+            le.column_value = facture1;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
     END;
 
 END;
@@ -54,6 +174,7 @@ CREATE OR REPLACE TYPE BODY carte_t AS
     BEGIN
         RETURN remise;
     END;
+
     MEMBER PROCEDURE addclient (
         client REF client_t
     ) IS
@@ -92,6 +213,29 @@ CREATE OR REPLACE TYPE BODY carte_t AS
             RAISE;
     END;
 
+    MEMBER PROCEDURE updateclient (
+        client1 REF client_t,
+        client2 REF client_t
+    ) IS
+    BEGIN
+        UPDATE TABLE (
+            SELECT
+                ot.clients
+            FROM
+                carte_o ot
+            WHERE
+                ot.nom = self.nom
+        ) le
+        SET
+            le.column_value = client2
+        WHERE
+            le.column_value = client1;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
 END;
 /
 
@@ -119,6 +263,81 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE;
+    END;
+
+    MEMBER PROCEDURE add_facture (
+        facture REF ticket_t
+    ) IS
+    BEGIN
+        INSERT INTO TABLE (
+            SELECT
+                ot.facture_du_fourn
+            FROM
+                fournisseur_o ot
+            WHERE
+                ot.siret = self.siret
+        ) VALUES ( facture );
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE delete_facture (
+        facture REF ticket_t
+    ) IS
+    BEGIN
+        DELETE FROM TABLE (
+            SELECT
+                ot.facture_du_fourn
+            FROM
+                fournisseur_o ot
+            WHERE
+                ot.siret = self.siret
+        ) le
+        WHERE
+            le.column_value = facture;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE update_facture (
+        facture1 REF ticket_t,
+        facture2 REF ticket_t
+    ) IS
+    BEGIN
+        UPDATE TABLE (
+            SELECT
+                ot.facture_du_fourn
+            FROM
+                fournisseur_o ot
+            WHERE
+                ot.siret = self.siret
+        ) le
+        SET
+            le.column_value = facture2
+        WHERE
+            le.column_value = facture1;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER FUNCTION get_catalogue RETURN listrefarticle_t IS
+        x listrefarticle_t;
+    BEGIN
+        SELECT
+            CAST(COLLECT(article) AS listrefarticle_t)
+        INTO x
+        FROM
+            ligneticket_o
+        WHERE
+            deref(TREAT(deref(parentticket) AS facturerecue_t).fournisseur).siret = 1234;
+
+        RETURN x;
     END;
 
 END;
@@ -166,6 +385,67 @@ CREATE OR REPLACE TYPE BODY empl_t AS
             RETURN -1;
         END IF;
 
+    END;
+
+    MEMBER PROCEDURE add_ticket_emis (
+        ticket REF ticket_t
+    ) IS
+    BEGIN
+        INSERT INTO TABLE (
+            SELECT
+                ot.ticket_emis
+            FROM
+                empl_o ot
+            WHERE
+                ot.numsecu = self.numsecu
+        ) VALUES ( ticket );
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE delete_ticket_emis (
+        ticket REF ticket_t
+    ) IS
+    BEGIN
+        DELETE FROM TABLE (
+            SELECT
+                ot.ticket_emis
+            FROM
+                empl_o ot
+            WHERE
+                ot.numsecu = self.numsecu
+        ) le
+        WHERE
+            le.column_value = ticket;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE update_ticket_emis (
+        ticket1 REF ticket_t,
+        ticket2 REF ticket_t
+    ) IS
+    BEGIN
+        UPDATE TABLE (
+            SELECT
+                ot.ticket_emis
+            FROM
+                empl_o ot
+            WHERE
+                ot.numsecu = self.numsecu
+        ) le
+        SET
+            le.column_value = ticket2
+        WHERE
+            le.column_value = ticket1;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
     END;
 
 END;

@@ -142,9 +142,9 @@ WHERE
         FROM
             TABLE (
                 SELECT
-                    catalogue
+                    f.get_catalogue()
                 FROM
-                    fournisseur_o
+                    fournisseur_o f
                 WHERE
                     siret = 1234
             ) lre
@@ -246,4 +246,6 @@ END LOOP;
 
 end;
 /
+
+ROLLBACK;
 -- Here code
