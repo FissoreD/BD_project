@@ -146,6 +146,10 @@ CREATE OR REPLACE TYPE listrefticket_t AS
     TABLE OF REF ticket_t
 /
 
+CREATE OR REPLACE TYPE setticket_t AS
+    TABLE OF ticket_t
+/
+
 CREATE OR REPLACE TYPE article_t AS OBJECT (
     quantite               NUMBER,
     codebarre              VARCHAR2(13),
@@ -198,10 +202,6 @@ CREATE OR REPLACE TYPE empl_t AS OBJECT (
 );
 /
 
-CREATE OR REPLACE TYPE setticket_t AS
-    TABLE OF ticket_t
-/
-
 CREATE OR REPLACE TYPE setarticle_t AS
     TABLE OF article_t
 /
@@ -214,8 +214,8 @@ CREATE OR REPLACE TYPE fournisseur_t AS OBJECT (
     naissance        DATE,
     facture_du_fourn listrefticket_t,
     MAP MEMBER FUNCTION compfournisseur RETURN VARCHAR2,
-    MEMBER FUNCTION get_factures_a_payer RETURN setticket_t,
-    MEMBER FUNCTION get_catalogue return listrefarticle_t,
+    MEMBER FUNCTION get_factures_a_payer RETURN listrefticket_t,
+    MEMBER FUNCTION get_catalogue RETURN listrefarticle_t,
     MEMBER PROCEDURE add_facture (
            facture REF ticket_t
        ),
@@ -239,7 +239,7 @@ CREATE OR REPLACE TYPE client_t AS OBJECT (
     carte             REF carte_t,
     facture_du_client listrefticket_t,
     MAP MEMBER FUNCTION compclient RETURN VARCHAR2,
-    MEMBER FUNCTION get_factures_a_encaisser RETURN setticket_t,
+    MEMBER FUNCTION get_factures_a_encaisser RETURN listrefticket_t,
     MEMBER PROCEDURE add_facture (
            facture REF ticket_t
        ),

@@ -90,19 +90,26 @@ CREATE OR REPLACE TYPE BODY client_t AS
                || id;
     END;
 
-    MEMBER FUNCTION get_factures_a_encaisser RETURN setticket_t IS
-        res setticket_t;
+    MEMBER FUNCTION get_factures_a_encaisser RETURN listrefticket_t IS
+        res listrefticket_t;
     BEGIN
         SELECT
-            CAST(COLLECT(value(f)) AS setticket_t)
+            CAST(COLLECT(value(t)) AS listrefticket_t)
         INTO res
         FROM
-            ticket_o f
+            TABLE (
+                SELECT
+                    self.facture_du_client
+                FROM
+                    dual
+            ) t
         WHERE
-                deref(TREAT(value(f) AS factureemise_t).client).id = self.id
-            AND TREAT(value(f) AS factureemise_t).payeounon = 0;
+            TREAT(deref(t.column_value) AS factureemise_t).payeounon = 0;
 
         RETURN res;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
     END;
 
     MEMBER PROCEDURE add_facture (
@@ -247,17 +254,21 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
                || siret;
     END;
 
-    MEMBER FUNCTION get_factures_a_payer RETURN setticket_t IS
-        res setticket_t;
+    MEMBER FUNCTION get_factures_a_payer RETURN listrefticket_t IS
+        res listrefticket_t;
     BEGIN
         SELECT
-            CAST(COLLECT(value(f)) AS setticket_t)
+            CAST(COLLECT(value(t)) AS listrefticket_t)
         INTO res
         FROM
-            ticket_o f
+            TABLE (
+                SELECT
+                    self.facture_du_fourn
+                FROM
+                    dual
+            ) t
         WHERE
-                deref(TREAT(value(f) AS facturerecue_t).fournisseur).siret = self.siret
-            AND TREAT(value(f) AS facturerecue_t).payeounon = 0;
+            TREAT(deref(t.column_value) AS facturerecue_t).payeounon = 0;
 
         RETURN res;
     EXCEPTION

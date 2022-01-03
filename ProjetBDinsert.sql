@@ -1077,7 +1077,6 @@ BEGIN
 
     utl_ref.select_object(fact_emise5ref, fact_emise5);
     fact_emise5.addligneticket(ligne_ticket21);
-    
     INSERT INTO ticket_o t VALUES (
         16,
         1,
@@ -1087,8 +1086,8 @@ BEGIN
         carte1,
         TO_DATE('05-01-2022', 'DD-MM-YYYY')
     ) RETURN ref(t) INTO ticket1ref;
-     utl_ref.select_object(ticket1ref, ticket1);
 
+    utl_ref.select_object(ticket1ref, ticket1);
     employe3.add_ticket_emis(ticket1ref);
     INSERT INTO ligneticket_o lt VALUES (
         22,
@@ -1103,40 +1102,4 @@ END;
 /
 
 COMMIT;
-/*
-SELECT
-    *
-FROM
-    carte_o;
-
-SELECT
-    *
-FROM
-    client_o;
-
-SELECT
-    *
-FROM
-    fournisseur_o;
-
-SELECT
-    *
-FROM
-    ticket_o;
-
-SELECT
-    *
-FROM
-    ligneticket_o;
-
-SELECT
-    *
-FROM
-    article_o;
-
-SELECT
-    *
-FROM
-    empl_o;
-
 /**/

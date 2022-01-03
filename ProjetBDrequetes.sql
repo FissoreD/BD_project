@@ -1,3 +1,5 @@
+SET SERVEROUTPUT OFF;
+
 -- Requetes de consultations
 -- 5 requetes impliquant 1 table dont 1 avec un group By et une avec un Order By
 
@@ -50,12 +52,11 @@ ORDER BY
     
 -- La date limite de toutes les factures recues
 SELECT
-    TREAT(value(ot) AS facturerecue_t).datelimite as datelimite
+    TREAT(value(ot) AS facturerecue_t).datelimite AS datelimite
 FROM
     ticket_o ot
 WHERE
     value(ot) IS OF ( facturerecue_t );
-
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
 --SELECT *
@@ -70,16 +71,21 @@ SELECT
     o.siret AS siret
 FROM
     fournisseur_o o
-    LEFT JOIN TABLE (
+    LEFT JOIN (
         SELECT
-            b.get_factures_a_payer()
+            deref(TREAT(deref(t.column_value) AS facturerecue_t).fournisseur).siret AS ss
         FROM
-            fournisseur_o b
-        WHERE
-            b.siret = o.siret
-    )             t ON o.siret = TREAT(value(t) AS facturerecue_t).fournisseur.siret
+            TABLE (
+                SELECT
+                    b.get_factures_a_payer()
+                FROM
+                    fournisseur_o b
+                WHERE
+                    b.siret = 1234
+            ) t
+    ) ON o.siret = ss
 WHERE
-    TREAT(value(t) AS facturerecue_t).fournisseur.siret IS NULL;
+    ss IS NULL;
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
@@ -127,7 +133,6 @@ WHERE
             t.gettotal() > 500
     );
 
-
 -- 2 requetes impliquant plus de 2 tables
 
     -- tous les articles dans le catalogue du fournisseur 1234
@@ -172,7 +177,6 @@ WHERE
     
 
 
-
 -- Requetes de suppression 
 -- 2 requetes impliquant 1 table
 
@@ -198,7 +202,6 @@ SET
     clt.carte = NULL
 WHERE
     carte IS DANGLING;
-
 
 -- 2 requetes impliquant plus de 2 tables
 
