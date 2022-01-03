@@ -55,7 +55,6 @@ public class Main {
     }
 
     private enum Types{
-        public final String className = this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, TICKET;
         public final String className = this.toString() == "LIGNETICKET" ? "LigneTicket" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         public final String typePath = path2 + "." + this + "_T";
