@@ -295,6 +295,10 @@ CREATE OR REPLACE TYPE listrefcarte_t AS
     TABLE OF REF carte_t
 /
 
+CREATE OR REPLACE TYPE setligneticket_t AS
+    TABLE OF ligneticket_t;
+/
+
 ALTER TYPE empl_t
     ADD
         STATIC FUNCTION get_empl_qui_a_apporte_les_plus_dargent RETURN empl_t
@@ -343,6 +347,9 @@ ALTER TYPE client_t
     CASCADE;
 /
 
-alter type carte_t add static function get_nb_of_cl_from_nom(nom1 VARCHAR2) return number cascade;
+ALTER TYPE carte_t
+    ADD
+        STATIC FUNCTION get_nb_of_cl_from_nom ( nom1 VARCHAR2 ) RETURN NUMBER
+    CASCADE;
 /
 /**/

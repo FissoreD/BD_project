@@ -18,6 +18,8 @@ DROP TYPE setfacturerecue_t FORCE;
 
 DROP TYPE setfactureemise_t FORCE;
 
+DROP TYPE setligneticket_t FORCE;
+
 DROP TABLE ligneticket_o;
 
 DROP TABLE adresse_o;
@@ -297,6 +299,10 @@ CREATE OR REPLACE TYPE listrefcarte_t AS
     TABLE OF REF carte_t
 /
 
+CREATE OR REPLACE TYPE setligneticket_t AS
+    TABLE OF ligneticket_t;
+/
+
 ALTER TYPE empl_t
     ADD
         STATIC FUNCTION get_empl_qui_a_apporte_les_plus_dargent RETURN empl_t
@@ -345,7 +351,10 @@ ALTER TYPE client_t
     CASCADE;
 /
 
-alter type carte_t add static function get_nb_of_cl_from_nom(nom1 VARCHAR2) return number cascade;
+ALTER TYPE carte_t
+    ADD
+        STATIC FUNCTION get_nb_of_cl_from_nom ( nom1 VARCHAR2 ) RETURN NUMBER
+    CASCADE;
 /
 /**/
 /*
@@ -483,6 +492,11 @@ drop index client_o_adresse;
 drop index idx_client_o_carte;
 drop index idx_fournisseur_o_adresse;
 drop index idx_tablelistrefticketemis_nested_table_id_column_value;
+drop index idx_listrefticket_du_client_nested_table_id_column_value;
+drop index idx_tablelistref_facture_du_fourn_nested_table_id_column_value;
+drop index idx_listref_facture_avec_this_nested_table_id_column_value;
+
+
 
 ALTER TABLE ligneticket_o ADD (SCOPE FOR ( article ) IS article_o);
 CREATE INDEX ligneticket_o_article
@@ -2762,7 +2776,7 @@ WHERE
 
 -- 2 requetes impliquant 2 tables
 
-    -- les employ�s qui n'habitent pas � Nice recoivent
+    -- les employï¿½s qui n'habitent pas ï¿½ Nice recoivent
     -- 10 euro de salaire en plus pour payer l'essance
 UPDATE empl_o
 SET
@@ -2770,7 +2784,7 @@ SET
 WHERE
     deref(adresse).ville != 'Nice';
 
-    -- les employ�s qui ont �mis plus de 500 euro de ticket,
+    -- les employï¿½s qui ont ï¿½mis plus de 500 euro de ticket,
     -- recoivent un bonus de 50 euro dans leur salaire
 UPDATE empl_o
 SET
@@ -2807,7 +2821,7 @@ WHERE
             ) lre
     );
     
-    -- tous les articles pr�sents dans la facture d'achat 1
+    -- tous les articles prï¿½sents dans la facture d'achat 1
     -- subissent une reduction du prix de vente du 5%
 UPDATE article_o art
 SET
@@ -2859,19 +2873,19 @@ WHERE
 
 -- on supprime un ticket (pas une facture, vieux de plus de 10 ans)
 -- -> on supprime ses ligneticket
--- -> on met � jour ligne_ticket_avec_this dans les articles concern�s par ce ticket
--- -> on met � jour ticket_emis dans l'employe concerne par ce ticket
+-- -> on met à jour ligne_ticket_avec_this dans les articles concernés par ce ticket
+-- -> on met à jour ticket_emis dans l'employe concerne par ce ticket
 
-/*
+
 DECLARE
     ref_ticket      REF ticket_t;
     article         article_t;
-    ref_ligneticket REF ligneticket_t
-    ref_tick        setligneticket_t;
-    employe         employe_t
+    ref_ligneticket REF ligneticket_t;
+    ref_l_tick      setligneticket_t;
+    employe         empl_t;
     ticket_id       NUMBER := 17;
 BEGIN
-    --on met � jour ticket_emis dans l'employe concerne par ce ticket
+    --on met à jour ticket_emis dans l'employe concerne par ce ticket
     SELECT
         deref(t.employeemmetteur),
         ref(t)
@@ -2889,16 +2903,18 @@ BEGIN
     DELETE FROM ticket_o
     WHERE id = 17;
 
-    --on met � jour ligne_ticket_avec_this dans les articles concern�s par ce ticket
+    --on regroupe les ligneticket n'ayant plus de ticket parent
     SELECT
-        CAST(COLLECT(value(t)) AS setligneticket_t)
+        CAST(COLLECT(value(l)) AS setligneticket_t)
     INTO ref_l_tick
     FROM
-        ligneticket_o t
+        ligneticket_o l
     WHERE
-        value(t).parentticket IS DANGLING;
+        parentticket IS DANGLING;
 
+    --on it�re sur chacune des ligneticket qui n'ont plus de ticket parent
     FOR i IN ref_l_tick.first..ref_l_tick.last LOOP
+        --on supprime de l'article la reference vers cette ligneticket
         SELECT
             deref(l.article),
             ref(l)
@@ -2912,16 +2928,16 @@ BEGIN
 
         article.delete_ligne_ticket(ref_ligneticket);
 
-        --on supprime les ligneticket du ticket supprim�
+        --on supprime la lignetick
         DELETE FROM ligneticket_o l
         WHERE value(l) = ref_l_tick(i);
     END LOOP;
-
-END;*/
+    
+END;
 /
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
--- 1. on met � jour donc listrefclients_t dans la carte du client 1
+-- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
 -- 2. on supprime les factures emises sur ce client
 -- (Attention au trigger delete_facture_checker car on ne peut pas supprimer des factures de moins de 10 ans)
 DECLARE
