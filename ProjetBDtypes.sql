@@ -48,6 +48,8 @@ DROP TYPE listrefligneticket_t FORCE;
 
 DROP TYPE listrefclients_t FORCE;
 
+DROP TYPE listrefempl_t FORCE;
+
 DROP TYPE listrefarticle_t FORCE;
 
 CREATE OR REPLACE TYPE facturerecue_t
@@ -283,8 +285,62 @@ CREATE OR REPLACE TYPE setfactureemise_t AS
     TABLE OF factureemise_t
 /
 
-CREATE OR REPLACE TYPE setligneticket_t AS
-    TABLE OF ligneticket_t
+CREATE OR REPLACE TYPE listrefempl_t AS
+    TABLE OF REF empl_t
 /
 
+CREATE OR REPLACE TYPE listrefcarte_t AS
+    TABLE OF REF carte_t
+/
+
+ALTER TYPE empl_t
+    ADD
+        STATIC FUNCTION get_empl_qui_a_apporte_les_plus_dargent RETURN empl_t
+    CASCADE;
+/
+
+ALTER TYPE empl_t
+    ADD
+        MEMBER FUNCTION get_la_plus_chere_facture_emise RETURN ticket_t
+    CASCADE;
+/
+
+ALTER TYPE carte_t
+    ADD
+        STATIC FUNCTION get_most_used_card RETURN listrefcarte_t
+    CASCADE;
+/
+
+ALTER TYPE ligneticket_t
+    ADD
+        MEMBER FUNCTION get_cout RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE ligneticket_t
+    ADD
+        MEMBER FUNCTION get_ticket RETURN ticket_t
+    CASCADE;
+/
+
+ALTER TYPE article_t
+    ADD
+        MEMBER FUNCTION get_quantite_vendue RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE article_t
+    ADD
+        MEMBER FUNCTION get_quantite_achetee RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE client_t
+    ADD
+        MEMBER FUNCTION get_argent_apporte_en_entreprise RETURN NUMBER
+    CASCADE;
+/
+
+alter type carte_t add static function get_nb_of_cl_from_nom(nom1 VARCHAR2) return number cascade;
+/
 /**/

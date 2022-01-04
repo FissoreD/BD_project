@@ -1,6 +1,7 @@
 /*
 	2.1 LES TYPES
 */
+/
 DROP TABLE empl_o;
 
 DROP TABLE client_o;
@@ -51,7 +52,8 @@ DROP TYPE listrefligneticket_t FORCE;
 
 DROP TYPE listrefclients_t FORCE;
 
-drop type listrefempl_t force;
+DROP TYPE listrefempl_t FORCE;
+
 DROP TYPE listrefarticle_t FORCE;
 
 CREATE OR REPLACE TYPE facturerecue_t
@@ -287,16 +289,69 @@ CREATE OR REPLACE TYPE setfactureemise_t AS
     TABLE OF factureemise_t
 /
 
-create or replace type listrefempl_t as table of ref empl_t;
+CREATE OR REPLACE TYPE listrefempl_t AS
+    TABLE OF REF empl_t
+/
 
+CREATE OR REPLACE TYPE listrefcarte_t AS
+    TABLE OF REF carte_t
+/
 
-alter type empl_t add static function get_empl_qui_a_apporte_les_plus_dargent return empl_t cascade;
-alter type empl_t add member function get_la_plus_chere_facture_emise return ticket_t cascade;
+ALTER TYPE empl_t
+    ADD
+        STATIC FUNCTION get_empl_qui_a_apporte_les_plus_dargent RETURN empl_t
+    CASCADE;
+/
 
+ALTER TYPE empl_t
+    ADD
+        MEMBER FUNCTION get_la_plus_chere_facture_emise RETURN ticket_t
+    CASCADE;
+/
+
+ALTER TYPE carte_t
+    ADD
+        STATIC FUNCTION get_most_used_card RETURN listrefcarte_t
+    CASCADE;
+/
+
+ALTER TYPE ligneticket_t
+    ADD
+        MEMBER FUNCTION get_cout RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE ligneticket_t
+    ADD
+        MEMBER FUNCTION get_ticket RETURN ticket_t
+    CASCADE;
+/
+
+ALTER TYPE article_t
+    ADD
+        MEMBER FUNCTION get_quantite_vendue RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE article_t
+    ADD
+        MEMBER FUNCTION get_quantite_achetee RETURN NUMBER
+    CASCADE;
+/
+
+ALTER TYPE client_t
+    ADD
+        MEMBER FUNCTION get_argent_apporte_en_entreprise RETURN NUMBER
+    CASCADE;
+/
+
+alter type carte_t add static function get_nb_of_cl_from_nom(nom1 VARCHAR2) return number cascade;
+/
 /**/
 /*
 	2.2.1 LES TABLES
 */
+/
 /*
 DROP TABLE empl_o;
 
@@ -416,6 +471,7 @@ NESTED TABLE ligneticket STORE AS tablelistrefticketarticles;
 /*
 	2.2.2 LES INDEX
 */
+/
 drop index ligneticket_o_article;
 drop index ligneticket_o_parentticket;
 drop index idx_tablelistrefclients_nested_table_id_column_value;
@@ -482,9 +538,23 @@ ON fournisseur_o(adresse);
 ALTER TABLE tablelistrefticketemis ADD (SCOPE FOR ( column_value ) IS ticket_o);
 CREATE UNIQUE INDEX idx_tablelistrefticketemis_nested_table_id_column_value
 ON tablelistrefticketemis (nested_table_id, column_value);
+
+ALTER TABLE listrefticket_du_client ADD (SCOPE FOR ( column_value ) IS ticket_o);
+CREATE UNIQUE INDEX idx_listrefticket_du_client_nested_table_id_column_value
+ON listrefticket_du_client (nested_table_id, column_value);
+
+ALTER TABLE tablelistref_facture_du_fourn ADD (SCOPE FOR ( column_value ) IS ticket_o);
+CREATE UNIQUE INDEX idx_tablelistref_facture_du_fourn_nested_table_id_column_value
+ON tablelistref_facture_du_fourn (nested_table_id, column_value);
+
+ALTER TABLE listref_facture_avec_this ADD (SCOPE FOR ( column_value ) IS ligneticket_o);
+CREATE UNIQUE INDEX idx_listref_facture_avec_this_nested_table_id_column_value
+ON listref_facture_avec_this (nested_table_id, column_value);
+
 /*
 	2.X LES TRIGGERS
 */
+/
 CREATE OR REPLACE TRIGGER update_stock_quantity BEFORE
     INSERT OR UPDATE ON ligneticket_o
     FOR EACH ROW
@@ -583,6 +653,7 @@ END;
 /*
 	2.5 LES INMPLEMENTATIONS DES METHODES
 */
+/
 CREATE OR REPLACE TYPE BODY adresse_t AS
     MAP MEMBER FUNCTION compadresse RETURN VARCHAR2 IS
     BEGIN
@@ -664,6 +735,42 @@ CREATE OR REPLACE TYPE BODY article_t AS
             RAISE;
     END;
 
+    MEMBER FUNCTION get_quantite_vendue RETURN NUMBER IS
+        q       NUMBER := 0;
+        temp    NUMBER;
+        ligtick ligneticket_t;
+        tick    ticket_t;
+    BEGIN
+        FOR i IN self.ligne_ticket_avec_this.first..self.ligne_ticket_avec_this.last LOOP
+            utl_ref.select_object(self.ligne_ticket_avec_this(i), ligtick);
+            utl_ref.select_object(ligtick.parentticket, tick);
+            IF tick.estvente = 1 THEN
+                q := q + ligtick.quantite;
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
+    END;
+
+    MEMBER FUNCTION get_quantite_achetee RETURN NUMBER IS
+        q       NUMBER := 0;
+        temp    NUMBER;
+        ligtick ligneticket_t;
+        tick    ticket_t;
+    BEGIN
+        FOR i IN self.ligne_ticket_avec_this.first..self.ligne_ticket_avec_this.last LOOP
+            utl_ref.select_object(self.ligne_ticket_avec_this(i), ligtick);
+            utl_ref.select_object(ligtick.parentticket, tick);
+            IF tick.estvente = 0 THEN
+                q := q + ligtick.quantite;
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
+    END;
+
 END;
 /
 
@@ -673,6 +780,22 @@ CREATE OR REPLACE TYPE BODY client_t AS
         RETURN nom
                || prenom
                || id;
+    END;
+
+    MEMBER FUNCTION get_argent_apporte_en_entreprise RETURN NUMBER IS
+        q    NUMBER := 0;
+        temp NUMBER;
+        tick factureemise_t;
+    BEGIN
+        FOR i IN self.facture_du_client.first..self.facture_du_client.last LOOP
+            utl_ref.select_object(self.facture_du_client(i), tick);
+            IF tick.payeounon = 1 THEN
+                q := q + tick.gettotal();
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
     END;
 
     MEMBER FUNCTION get_factures_a_encaisser RETURN listrefticket_t IS
@@ -826,6 +949,68 @@ CREATE OR REPLACE TYPE BODY carte_t AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE;
+    END;
+
+    STATIC FUNCTION get_most_used_card RETURN listrefcarte_t IS
+        c    listrefcarte_t;
+        maxi NUMBER;
+    BEGIN
+        SELECT
+            CAST(COLLECT(o.carte_reduction) AS listrefcarte_t)
+        INTO c
+        FROM
+            ticket_o o
+        WHERE
+            o.carte_reduction IS NOT NULL
+            AND o.estvente = 1;
+
+        SELECT
+            COUNT(*)
+        INTO maxi
+        FROM
+            TABLE (
+                SELECT
+                    c
+                FROM
+                    dual
+            ) lre
+        WHERE
+            ROWNUM = 1
+        GROUP BY
+            deref(lre.column_value);
+
+        SELECT
+            CAST(COLLECT(lre.column_value) AS listrefcarte_t)
+        INTO c
+        FROM
+            TABLE (
+                SELECT
+                    c
+                FROM
+                    dual
+            ) lre
+        GROUP BY
+            deref(lre.column_value)
+        HAVING
+            COUNT(*) = maxi;
+
+        RETURN c;
+    END;
+
+    STATIC FUNCTION get_nb_of_cl_from_nom (
+        nom1 VARCHAR2
+    ) RETURN NUMBER IS
+        res NUMBER;
+    BEGIN
+        SELECT
+            COUNT(*)
+        INTO res
+        FROM
+            carte_o c
+        WHERE
+            c.nom = nom1;
+
+        RETURN res;
     END;
 
 END;
@@ -1063,6 +1248,29 @@ CREATE OR REPLACE TYPE BODY empl_t AS
         RETURN emp;
     END;
 
+    MEMBER FUNCTION get_la_plus_chere_facture_emise RETURN ticket_t IS
+        ticket ticket_t;
+    BEGIN
+        SELECT
+            deref(x.column_value)
+        INTO ticket
+        FROM
+            TABLE (
+                SELECT
+                    ticket_emis
+                FROM
+                    empl_o
+                WHERE
+                    numsecu = self.numsecu
+            ) x
+        WHERE
+            ROWNUM = 1
+        ORDER BY
+            deref(x.column_value).gettotal() DESC;
+
+        RETURN ticket;
+    END;
+
 END;
 /
 
@@ -1266,9 +1474,51 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
 
 END;
 /
+
+CREATE OR REPLACE TYPE BODY ligneticket_t AS
+    MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2 IS
+    BEGIN
+        RETURN numeroligne;
+    END;
+
+    MEMBER FUNCTION get_cout RETURN NUMBER IS
+        res    NUMBER := 1;
+        temp   NUMBER;
+        ticket ticket_t;
+    BEGIN
+        utl_ref.select_object(self.parentticket, ticket);
+        IF ticket.estvente = 1 THEN
+            SELECT
+                deref(self.article).prix_vente
+            INTO temp
+            FROM
+                dual;
+
+        ELSE
+            SELECT
+                deref(self.article).prix_vente
+            INTO temp
+            FROM
+                dual;
+
+        END IF;
+
+        res := temp * self.quantite;
+        RETURN res;
+    END;
+
+    MEMBER FUNCTION get_ticket RETURN ticket_t IS
+        ticket ticket_t;
+    BEGIN
+        utl_ref.select_object(self.parentticket, ticket);
+        RETURN ticket;
+    END;
+
+END;
 /*
 	2.3 LES INSERT
 */
+/
 ALTER TABLE ticket_o DISABLE ALL TRIGGERS;
 
 DELETE FROM adresse_o;
@@ -2280,8 +2530,8 @@ BEGIN
 
     utl_ref.select_object(fact_emise1ref, fact_emise1);
     fact_emise1.addligneticket(ligne_ticket16);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
-                                                     carte2, TO_DATE('25-12-2010', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2010',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2ref,
+                                                     carte2, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2ref, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise2ref;
 
     employe2.add_ticket_emis(fact_emise2ref);
@@ -2320,7 +2570,7 @@ BEGIN
     fact_emise3.addligneticket(ligne_ticket19);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1ref,
                                                      NULL, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8ref, TO_DATE('20-01-2022',
-               'DD-MM-YYYY'), 0) ) RETURNING ref(fe1) INTO fact_emise4ref;
+               'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise4ref;
 
     employe1.add_ticket_emis(fact_emise4ref);
     client8.add_facture(fact_emise4ref);
@@ -2368,12 +2618,35 @@ BEGIN
     ) RETURN ref(lt) INTO ligne_ticket1;
 
     ticket1.addligneticket(ligne_ticket1);
+    INSERT INTO ticket_o t VALUES (
+        17,
+        1,
+        listrefligneticket_t(),
+        'cb',
+        employe2ref,
+        carte2,
+        TO_DATE('05-01-2010', 'DD-MM-YYYY')
+    ) RETURN ref(t) INTO ticket1ref;
+
+    utl_ref.select_object(ticket1ref, ticket1);
+    employe2.add_ticket_emis(ticket1ref);
+    INSERT INTO ligneticket_o lt VALUES (
+        23,
+        3,
+        article6ref,
+        ticket1ref
+    ) RETURN ref(lt) INTO ligne_ticket1;
+
+    ticket1.addligneticket(ligne_ticket1);
     /**/
 END;
 /
 
 COMMIT;
-/**/
+/*
+	2.4 LES REQUETES
+*/
+/
 /*
 	2.4 LES REQUETES
 */
@@ -2582,15 +2855,70 @@ SET
 WHERE
     carte IS DANGLING;
 
--- suppression d'un employe et ses tickets emis
-
-DELETE FROM empl_o
-WHERE numsecu = 1111111111112;
-
-DELETE FROM ticket_o
-WHERE employeemmetteur IS DANGLING;
-
 -- 2 requetes impliquant plus de 2 tables
+
+-- on supprime un ticket (pas une facture, vieux de plus de 10 ans)
+-- -> on supprime ses ligneticket
+-- -> on met à jour ligne_ticket_avec_this dans les articles concernés par ce ticket
+-- -> on met à jour ticket_emis dans l'employe concerne par ce ticket
+
+/*
+DECLARE
+    ref_ticket      REF ticket_t;
+    article         article_t;
+    ref_ligneticket REF ligneticket_t
+    ref_tick        setligneticket_t;
+    employe         employe_t
+    ticket_id       NUMBER := 17;
+BEGIN
+    --on met à jour ticket_emis dans l'employe concerne par ce ticket
+    SELECT
+        deref(t.employeemmetteur),
+        ref(t)
+    INTO
+        employe,
+        ref_ticket
+    FROM
+        ticket_o t
+    WHERE
+        t.id = ticket_id;
+
+    employe.delete_ticket_emis(ref_ticket);
+    
+    --on supprime le ticket
+    DELETE FROM ticket_o
+    WHERE id = 17;
+
+    --on met à jour ligne_ticket_avec_this dans les articles concernés par ce ticket
+    SELECT
+        CAST(COLLECT(value(t)) AS setligneticket_t)
+    INTO ref_l_tick
+    FROM
+        ligneticket_o t
+    WHERE
+        value(t).parentticket IS DANGLING;
+
+    FOR i IN ref_l_tick.first..ref_l_tick.last LOOP
+        SELECT
+            deref(l.article),
+            ref(l)
+        INTO
+            article,
+            ref_ligneticket
+        FROM
+            ligneticket_o l
+        WHERE
+            value(l) = ref_l_tick(i);
+
+        article.delete_ligne_ticket(ref_ligneticket);
+
+        --on supprime les ligneticket du ticket supprimé
+        DELETE FROM ligneticket_o l
+        WHERE value(l) = ref_l_tick(i);
+    END LOOP;
+
+END;*/
+/
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
 -- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
@@ -2624,8 +2952,7 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS
-dangling;
+        TREAT(value(t) AS factureemise_t).client IS dangling;
 
 FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
     DELETE FROM ticket_o t
@@ -2638,10 +2965,10 @@ end;
 /
 
 ROLLBACK;
--- Here code
 /*
 	2.X OTHER
 */
+/
 SET SERVEROUTPUT ON
 
 DECLARE

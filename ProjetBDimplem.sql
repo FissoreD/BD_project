@@ -79,6 +79,42 @@ CREATE OR REPLACE TYPE BODY article_t AS
             RAISE;
     END;
 
+    MEMBER FUNCTION get_quantite_vendue RETURN NUMBER IS
+        q       NUMBER := 0;
+        temp    NUMBER;
+        ligtick ligneticket_t;
+        tick    ticket_t;
+    BEGIN
+        FOR i IN self.ligne_ticket_avec_this.first..self.ligne_ticket_avec_this.last LOOP
+            utl_ref.select_object(self.ligne_ticket_avec_this(i), ligtick);
+            utl_ref.select_object(ligtick.parentticket, tick);
+            IF tick.estvente = 1 THEN
+                q := q + ligtick.quantite;
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
+    END;
+
+    MEMBER FUNCTION get_quantite_achetee RETURN NUMBER IS
+        q       NUMBER := 0;
+        temp    NUMBER;
+        ligtick ligneticket_t;
+        tick    ticket_t;
+    BEGIN
+        FOR i IN self.ligne_ticket_avec_this.first..self.ligne_ticket_avec_this.last LOOP
+            utl_ref.select_object(self.ligne_ticket_avec_this(i), ligtick);
+            utl_ref.select_object(ligtick.parentticket, tick);
+            IF tick.estvente = 0 THEN
+                q := q + ligtick.quantite;
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
+    END;
+
 END;
 /
 
@@ -88,6 +124,22 @@ CREATE OR REPLACE TYPE BODY client_t AS
         RETURN nom
                || prenom
                || id;
+    END;
+
+    MEMBER FUNCTION get_argent_apporte_en_entreprise RETURN NUMBER IS
+        q    NUMBER := 0;
+        temp NUMBER;
+        tick factureemise_t;
+    BEGIN
+        FOR i IN self.facture_du_client.first..self.facture_du_client.last LOOP
+            utl_ref.select_object(self.facture_du_client(i), tick);
+            IF tick.payeounon = 1 THEN
+                q := q + tick.gettotal();
+            END IF;
+
+        END LOOP;
+
+        RETURN q;
     END;
 
     MEMBER FUNCTION get_factures_a_encaisser RETURN listrefticket_t IS
@@ -241,6 +293,68 @@ CREATE OR REPLACE TYPE BODY carte_t AS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE;
+    END;
+
+    STATIC FUNCTION get_most_used_card RETURN listrefcarte_t IS
+        c    listrefcarte_t;
+        maxi NUMBER;
+    BEGIN
+        SELECT
+            CAST(COLLECT(o.carte_reduction) AS listrefcarte_t)
+        INTO c
+        FROM
+            ticket_o o
+        WHERE
+            o.carte_reduction IS NOT NULL
+            AND o.estvente = 1;
+
+        SELECT
+            COUNT(*)
+        INTO maxi
+        FROM
+            TABLE (
+                SELECT
+                    c
+                FROM
+                    dual
+            ) lre
+        WHERE
+            ROWNUM = 1
+        GROUP BY
+            deref(lre.column_value);
+
+        SELECT
+            CAST(COLLECT(lre.column_value) AS listrefcarte_t)
+        INTO c
+        FROM
+            TABLE (
+                SELECT
+                    c
+                FROM
+                    dual
+            ) lre
+        GROUP BY
+            deref(lre.column_value)
+        HAVING
+            COUNT(*) = maxi;
+
+        RETURN c;
+    END;
+
+    STATIC FUNCTION get_nb_of_cl_from_nom (
+        nom1 VARCHAR2
+    ) RETURN NUMBER IS
+        res NUMBER;
+    BEGIN
+        SELECT
+            COUNT(*)
+        INTO res
+        FROM
+            carte_o c
+        WHERE
+            c.nom = nom1;
+
+        RETURN res;
     END;
 
 END;
@@ -459,6 +573,48 @@ CREATE OR REPLACE TYPE BODY empl_t AS
             RAISE;
     END;
 
+    STATIC FUNCTION get_empl_qui_a_apporte_les_plus_dargent RETURN empl_t IS
+        emp empl_t;
+    BEGIN
+        SELECT
+            deref(employeemmetteur)
+        INTO emp
+        FROM
+            ticket_o
+        WHERE
+            employeemmetteur IS NOT NULL
+            AND ROWNUM = 1
+        GROUP BY
+            deref(employeemmetteur)
+        ORDER BY
+            COUNT(*) DESC;
+
+        RETURN emp;
+    END;
+
+    MEMBER FUNCTION get_la_plus_chere_facture_emise RETURN ticket_t IS
+        ticket ticket_t;
+    BEGIN
+        SELECT
+            deref(x.column_value)
+        INTO ticket
+        FROM
+            TABLE (
+                SELECT
+                    ticket_emis
+                FROM
+                    empl_o
+                WHERE
+                    numsecu = self.numsecu
+            ) x
+        WHERE
+            ROWNUM = 1
+        ORDER BY
+            deref(x.column_value).gettotal() DESC;
+
+        RETURN ticket;
+    END;
+
 END;
 /
 
@@ -662,3 +818,44 @@ CREATE OR REPLACE TYPE BODY ticket_t AS
 
 END;
 /
+
+CREATE OR REPLACE TYPE BODY ligneticket_t AS
+    MAP MEMBER FUNCTION comparligneticket RETURN VARCHAR2 IS
+    BEGIN
+        RETURN numeroligne;
+    END;
+
+    MEMBER FUNCTION get_cout RETURN NUMBER IS
+        res    NUMBER := 1;
+        temp   NUMBER;
+        ticket ticket_t;
+    BEGIN
+        utl_ref.select_object(self.parentticket, ticket);
+        IF ticket.estvente = 1 THEN
+            SELECT
+                deref(self.article).prix_vente
+            INTO temp
+            FROM
+                dual;
+
+        ELSE
+            SELECT
+                deref(self.article).prix_vente
+            INTO temp
+            FROM
+                dual;
+
+        END IF;
+
+        res := temp * self.quantite;
+        RETURN res;
+    END;
+
+    MEMBER FUNCTION get_ticket RETURN ticket_t IS
+        ticket ticket_t;
+    BEGIN
+        utl_ref.select_object(self.parentticket, ticket);
+        RETURN ticket;
+    END;
+
+END;

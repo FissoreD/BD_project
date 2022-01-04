@@ -1,6 +1,3 @@
-/*
-	2.3 LES INSERT
-*/
 ALTER TABLE ticket_o DISABLE ALL TRIGGERS;
 
 DELETE FROM adresse_o;
@@ -1052,7 +1049,7 @@ BEGIN
     fact_emise3.addligneticket(ligne_ticket19);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(14, 1, listrefligneticket_t(), 'autre', employe1ref,
                                                      NULL, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client8ref, TO_DATE('20-01-2022',
-               'DD-MM-YYYY'), 0) ) RETURNING ref(fe1) INTO fact_emise4ref;
+               'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise4ref;
 
     employe1.add_ticket_emis(fact_emise4ref);
     client8.add_facture(fact_emise4ref);
@@ -1100,7 +1097,6 @@ BEGIN
     ) RETURN ref(lt) INTO ligne_ticket1;
 
     ticket1.addligneticket(ligne_ticket1);
-    
     INSERT INTO ticket_o t VALUES (
         17,
         1,

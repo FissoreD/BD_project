@@ -2,35 +2,35 @@ import os
 
 order = [
     (
-        '/*\n\t2.1 LES TYPES\n*/\n',
+        '/*\n\t2.1 LES TYPES\n*/\n/\n',
         'ProjetBDtypes.sql'
     ),
     (
-        '/*\n\t2.2.1 LES TABLES\n*/\n',
+        '/*\n\t2.2.1 LES TABLES\n*/\n/\n',
         'ProjetBDtables.sql'
     ),
     (
-        '/*\n\t2.2.2 LES INDEX\n*/\n',
+        '/*\n\t2.2.2 LES INDEX\n*/\n/\n',
         'ProjetBDindex.sql'
     ),
     (
-        '/*\n\t2.X LES TRIGGERS\n*/\n',
+        '/*\n\t2.X LES TRIGGERS\n*/\n/\n',
         'ProjetBDtrigger.sql'
     ),
     (
-        '/*\n\t2.5 LES INMPLEMENTATIONS DES METHODES\n*/\n',
+        '/*\n\t2.5 LES INMPLEMENTATIONS DES METHODES\n*/\n/\n',
         'ProjetBDimplem.sql'
     ),
     (
-        '/*\n\t2.3 LES INSERT\n*/\n',
+        '/*\n\t2.3 LES INSERT\n*/\n/\n',
         'ProjetBDinsert.sql'
     ),
     (
-        '/*\n\t2.4 LES REQUETES\n*/\n',
+        '/*\n\t2.4 LES REQUETES\n*/\n/\n',
         'ProjetBDrequetes.sql'
     ),
     (
-        '/*\n\t2.X OTHER\n*/\n',
+        '/*\n\t2.X OTHER\n*/\n/\n',
         'ProjetBDdeclare.sql'
     ), ]
 res_folder = 'Rendu'
