@@ -1,3 +1,5 @@
+SET SERVEROUTPUT OFF;
+
 -- Requetes de consultations
 -- 5 requetes impliquant 1 table dont 1 avec un group By et une avec un Order By
 
@@ -10,9 +12,13 @@ WHERE
     oc.remise >= 0.2;
 
 -- Articles dont il en reste plus de 3 et qui coutent 50 euros ou moins
-Select nom
-from article_o
-where quantite > 3 and prix_vente <= 50;
+SELECT
+    nom
+FROM
+    article_o
+WHERE
+        quantite > 3
+    AND prix_vente <= 50;
 
 -- Nom et prenom de chaque fournisseur
 SELECT
@@ -43,7 +49,14 @@ WHERE
     OR oa.numero = 12
 ORDER BY
     value(oa);
-
+    
+-- La date limite de toutes les factures recues
+SELECT
+    TREAT(value(ot) AS facturerecue_t).datelimite AS datelimite
+FROM
+    ticket_o ot
+WHERE
+    value(ot) IS OF ( facturerecue_t );
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
 --SELECT *
@@ -58,16 +71,21 @@ SELECT
     o.siret AS siret
 FROM
     fournisseur_o o
-    LEFT JOIN TABLE (
+    LEFT JOIN (
         SELECT
-            b.get_factures_a_payer()
+            deref(TREAT(deref(t.column_value) AS facturerecue_t).fournisseur).siret AS ss
         FROM
-            fournisseur_o b
-        WHERE
-            b.siret = o.siret
-    )             t ON o.siret = TREAT(value(t) AS facturerecue_t).fournisseur.siret
+            TABLE (
+                SELECT
+                    b.get_factures_a_payer()
+                FROM
+                    fournisseur_o b
+                WHERE
+                    b.siret = 1234
+            ) t
+    ) ON o.siret = ss
 WHERE
-    TREAT(value(t) AS facturerecue_t).fournisseur.siret IS NULL;
+    ss IS NULL;
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
@@ -115,7 +133,6 @@ WHERE
             t.gettotal() > 500
     );
 
-
 -- 2 requetes impliquant plus de 2 tables
 
     -- tous les articles dans le catalogue du fournisseur 1234
@@ -130,9 +147,9 @@ WHERE
         FROM
             TABLE (
                 SELECT
-                    catalogue
+                    f.get_catalogue()
                 FROM
-                    fournisseur_o
+                    fournisseur_o f
                 WHERE
                     siret = 1234
             ) lre
@@ -160,29 +177,31 @@ WHERE
     
 
 
-
 -- Requetes de suppression 
 -- 2 requetes impliquant 1 table
 
 -- ici on sait que le client 7 n'a ni de carte ni de facture
 DELETE FROM client_o
-WHERE id = 7;
+WHERE
+    id = 7;
 
 -- ici on sait que ces cartes ne sont affectees a aucun client
 DELETE FROM carte_o
-WHERE remise > 0.35;
+WHERE
+    remise > 0.35;
 
 -- 2 requetes impliquant 2 tables
 
 -- on supprime un carte et supprime le pointeur des clients vers celle-ci
 DELETE FROM carte_o
-WHERE nom = 'gold';
+WHERE
+    nom = 'gold';
 
 UPDATE client_o clt
 SET
-    clt.carte = null
+    clt.carte = NULL
 WHERE
-    carte is DANGLING;
+    carte IS DANGLING;
 
 -- suppression d'un employe et ses tickets emis
 
@@ -190,7 +209,7 @@ DELETE FROM empl_o
 WHERE numsecu = 1111111111112;
 
 DELETE FROM ticket_o
-WHERE employeemmetteur is DANGLING;
+WHERE employeemmetteur IS DANGLING;
 
 -- 2 requetes impliquant plus de 2 tables
 
@@ -226,14 +245,18 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS DANGLING;
+        TREAT(value(t) AS factureemise_t).client IS
+dangling;
 
-    FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
-        DELETE FROM ticket_o t
-        WHERE
-            value(t) = ref_fact_e(i);
-    END LOOP;
+FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
+    DELETE FROM ticket_o t
+    WHERE
+        value(t) = ref_fact_e(i);
 
-END;
+END LOOP;
+
+end;
 /
+
+ROLLBACK;
 -- Here code

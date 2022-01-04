@@ -3,8 +3,10 @@ SET SERVEROUTPUT ON
 DECLARE
     fourn1          fournisseur_t;
     client1         client_t;
-    factures_recues setticket_t;
-    factures_emises setticket_t;
+    factures_recues listrefticket_t;
+    factures_emises listrefticket_t;
+    ticket_ref      REF ticket_t;
+    ticket_temp     ticket_t;
 BEGIN
     SELECT
         value(f)
@@ -15,16 +17,28 @@ BEGIN
         siret = 1234;
 
     factures_recues := fourn1.get_factures_a_payer;
-    factures_emises := client_t.get_factures_a_encaisser(1);
     FOR i IN factures_recues.first..factures_recues.last LOOP
+        ticket_ref := factures_recues(i);
+        utl_ref.select_object(ticket_ref, ticket_temp);
         dbms_output.put_line('La facture '
-                             || factures_recues(i).id
+                             || ticket_temp.id
                              || ' est a payer');
     END LOOP;
 
+    SELECT
+        value(f)
+    INTO client1
+    FROM
+        client_o f
+    WHERE
+        id = 1;
+
+    factures_emises := client1.get_factures_a_encaisser;
     FOR i IN factures_emises.first..factures_emises.last LOOP
+        ticket_ref := factures_emises(i);
+        utl_ref.select_object(ticket_ref, ticket_temp);
         dbms_output.put_line('La facture '
-                             || factures_emises(i).id
+                             || ticket_temp.id
                              || ' est a encaisser');
     END LOOP;
 
@@ -45,7 +59,7 @@ BEGIN
 
     str := res1.print_ticket();
     dbms_output.put_line(str);
-    
+    dbms_output.put_line('');
     SELECT
         value(f)
     INTO res1
