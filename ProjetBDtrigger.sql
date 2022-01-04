@@ -86,10 +86,23 @@ BEGIN
         dual;
 
     IF today - :old.dateemission <= 3650 THEN
-        raise_application_error(-20001, 'On ne peut pas supprimer ce client parce que il y a une facture emise le '
-                                        || :old.dateemission);
-
+        raise_application_error(-20001, 'On ne peut pas supprimer ce client parce que il y a une facture emise le ' || :old.dateemission);
     END IF;
 
 END;
 /
+CREATE OR REPLACE TRIGGER check_ticket_employe AFTER
+    INSERT OR UPDATE ON ticket_o
+    FOR EACH ROW
+DECLARE
+    empl empl_t;
+BEGIN
+    select deref(:new.employeemmetteur) into empl from dual;
+    IF
+        empl IS NULL and
+     :new.estvente = 1
+    THEN
+        raise_application_error(-20001, 'Le client ne peut pas etre null dans un ticket de vente');
+    END IF;
+
+END;

@@ -93,7 +93,7 @@ CREATE TABLE ligneticket_o OF ligneticket_t (
 
 CREATE TABLE ticket_o OF ticket_t (
     CONSTRAINT pk_ticket_o_id PRIMARY KEY ( id ),
-    CONSTRAINT chk_ticket_o_estvente CHECK ( estvente BETWEEN 0 AND 1 ),
+    CONSTRAINT chk_ticket_o_estvente CHECK ( estvente IN ( 0, 1 ) ),
     CONSTRAINT nnl_ticket_o_ligneticket CHECK ( ligneticket IS NOT NULL ),
     --possible d'avoir un ticket avc une table vide d'article
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),
