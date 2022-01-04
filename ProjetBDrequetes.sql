@@ -184,6 +184,13 @@ SET
 WHERE
     carte is DANGLING;
 
+-- suppression d'un employe et ses tickets emis
+
+DELETE FROM empl_o
+WHERE numsecu = 1111111111112;
+
+DELETE FROM ticket_o
+WHERE employeemmetteur is DANGLING;
 
 -- 2 requetes impliquant plus de 2 tables
 

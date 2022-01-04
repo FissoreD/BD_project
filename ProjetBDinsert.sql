@@ -1030,7 +1030,7 @@ BEGIN
     utl_ref.select_object(fact_emise1ref, fact_emise1);
     fact_emise1.addligneticket(ligne_ticket16);
     INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
-                                                     carte2, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2021',
+                                                     carte2, TO_DATE('25-12-2010', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2010',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise2ref;
 
     INSERT INTO ligneticket_o lt VALUES (
