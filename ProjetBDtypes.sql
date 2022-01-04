@@ -14,6 +14,8 @@ DROP TYPE setfacturerecue_t FORCE;
 
 DROP TYPE setfactureemise_t FORCE;
 
+DROP TYPE setligneticket_t FORCE;
+
 DROP TABLE ligneticket_o;
 
 DROP TABLE adresse_o;
