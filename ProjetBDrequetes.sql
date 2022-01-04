@@ -1,3 +1,6 @@
+/*
+	2.4 LES REQUETES
+*/
 SET SERVEROUTPUT OFF;
 
 -- Requetes de consultations
@@ -203,15 +206,70 @@ SET
 WHERE
     carte IS DANGLING;
 
--- suppression d'un employe et ses tickets emis
-
-DELETE FROM empl_o
-WHERE numsecu = 1111111111112;
-
-DELETE FROM ticket_o
-WHERE employeemmetteur IS DANGLING;
-
 -- 2 requetes impliquant plus de 2 tables
+
+-- on supprime un ticket (pas une facture, vieux de plus de 10 ans)
+-- -> on supprime ses ligneticket
+-- -> on met à jour ligne_ticket_avec_this dans les articles concernés par ce ticket
+-- -> on met à jour ticket_emis dans l'employe concerne par ce ticket
+
+/*
+DECLARE
+    ref_ticket      REF ticket_t;
+    article         article_t;
+    ref_ligneticket REF ligneticket_t
+    ref_tick        setligneticket_t;
+    employe         employe_t
+    ticket_id       NUMBER := 17;
+BEGIN
+    --on met à jour ticket_emis dans l'employe concerne par ce ticket
+    SELECT
+        deref(t.employeemmetteur),
+        ref(t)
+    INTO
+        employe,
+        ref_ticket
+    FROM
+        ticket_o t
+    WHERE
+        t.id = ticket_id;
+
+    employe.delete_ticket_emis(ref_ticket);
+    
+    --on supprime le ticket
+    DELETE FROM ticket_o
+    WHERE id = 17;
+
+    --on met à jour ligne_ticket_avec_this dans les articles concernés par ce ticket
+    SELECT
+        CAST(COLLECT(value(t)) AS setligneticket_t)
+    INTO ref_l_tick
+    FROM
+        ligneticket_o t
+    WHERE
+        value(t).parentticket IS DANGLING;
+
+    FOR i IN ref_l_tick.first..ref_l_tick.last LOOP
+        SELECT
+            deref(l.article),
+            ref(l)
+        INTO
+            article,
+            ref_ligneticket
+        FROM
+            ligneticket_o l
+        WHERE
+            value(l) = ref_l_tick(i);
+
+        article.delete_ligne_ticket(ref_ligneticket);
+
+        --on supprime les ligneticket du ticket supprimé
+        DELETE FROM ligneticket_o l
+        WHERE value(l) = ref_l_tick(i);
+    END LOOP;
+
+END;*/
+/
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
 -- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
@@ -245,8 +303,7 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS
-dangling;
+        TREAT(value(t) AS factureemise_t).client IS dangling;
 
 FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
     DELETE FROM ticket_o t
@@ -259,4 +316,3 @@ end;
 /
 
 ROLLBACK;
--- Here code

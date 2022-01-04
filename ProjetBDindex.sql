@@ -64,3 +64,15 @@ ON fournisseur_o(adresse);
 ALTER TABLE tablelistrefticketemis ADD (SCOPE FOR ( column_value ) IS ticket_o);
 CREATE UNIQUE INDEX idx_tablelistrefticketemis_nested_table_id_column_value
 ON tablelistrefticketemis (nested_table_id, column_value);
+
+ALTER TABLE listrefticket_du_client ADD (SCOPE FOR ( column_value ) IS ticket_o);
+CREATE UNIQUE INDEX idx_listrefticket_du_client_nested_table_id_column_value
+ON listrefticket_du_client (nested_table_id, column_value);
+
+ALTER TABLE tablelistref_facture_du_fourn ADD (SCOPE FOR ( column_value ) IS ticket_o);
+CREATE UNIQUE INDEX idx_tablelistref_facture_du_fourn_nested_table_id_column_value
+ON tablelistref_facture_du_fourn (nested_table_id, column_value);
+
+ALTER TABLE listref_facture_avec_this ADD (SCOPE FOR ( column_value ) IS ligneticket_o);
+CREATE UNIQUE INDEX idx_listref_facture_avec_this_nested_table_id_column_value
+ON listref_facture_avec_this (nested_table_id, column_value);

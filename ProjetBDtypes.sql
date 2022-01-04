@@ -283,4 +283,8 @@ CREATE OR REPLACE TYPE setfactureemise_t AS
     TABLE OF factureemise_t
 /
 
+CREATE OR REPLACE TYPE setligneticket_t AS
+    TABLE OF ligneticket_t
+/
+
 /**/

@@ -1,3 +1,6 @@
+/*
+	2.3 LES INSERT
+*/
 ALTER TABLE ticket_o DISABLE ALL TRIGGERS;
 
 DELETE FROM adresse_o;
@@ -1009,8 +1012,8 @@ BEGIN
 
     utl_ref.select_object(fact_emise1ref, fact_emise1);
     fact_emise1.addligneticket(ligne_ticket16);
-    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2,
-                                                     carte2, TO_DATE('25-12-2010', 'DD-MM-YYYY'), client2, TO_DATE('31-12-2010',
+    INSERT INTO ticket_o fe1 VALUES ( factureemise_t(12, 1, listrefligneticket_t(), 'autre', employe2ref,
+                                                     carte2, TO_DATE('25-12-2021', 'DD-MM-YYYY'), client2ref, TO_DATE('31-12-2021',
                'DD-MM-YYYY'), 1) ) RETURNING ref(fe1) INTO fact_emise2ref;
 
     employe2.add_ticket_emis(fact_emise2ref);
@@ -1097,9 +1100,29 @@ BEGIN
     ) RETURN ref(lt) INTO ligne_ticket1;
 
     ticket1.addligneticket(ligne_ticket1);
+    
+    INSERT INTO ticket_o t VALUES (
+        17,
+        1,
+        listrefligneticket_t(),
+        'cb',
+        employe2ref,
+        carte2,
+        TO_DATE('05-01-2010', 'DD-MM-YYYY')
+    ) RETURN ref(t) INTO ticket1ref;
+
+    utl_ref.select_object(ticket1ref, ticket1);
+    employe2.add_ticket_emis(ticket1ref);
+    INSERT INTO ligneticket_o lt VALUES (
+        23,
+        3,
+        article6ref,
+        ticket1ref
+    ) RETURN ref(lt) INTO ligne_ticket1;
+
+    ticket1.addligneticket(ligne_ticket1);
     /**/
 END;
 /
 
 COMMIT;
-/**/
