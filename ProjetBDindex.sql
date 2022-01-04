@@ -1,3 +1,4 @@
+/*
 drop index ligneticket_o_article;
 drop index ligneticket_o_parentticket;
 drop index idx_tablelistrefclients_nested_table_id_column_value;
@@ -12,7 +13,7 @@ drop index idx_tablelistrefticketemis_nested_table_id_column_value;
 drop index idx_listrefticket_du_client_nested_table_id_column_value;
 drop index idx_tablelistref_facture_du_fourn_nested_table_id_column_value;
 drop index idx_listref_facture_avec_this_nested_table_id_column_value;
-
+*/
 
 
 ALTER TABLE ligneticket_o ADD (SCOPE FOR ( article ) IS article_o);

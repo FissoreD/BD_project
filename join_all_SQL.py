@@ -30,7 +30,7 @@ order = [
         'ProjetBDrequetes.sql'
     ),
     (
-        '/*\n\t2.X OTHER\n*/\n/\n',
+        '/*\n\t2.X LES TESTS\n*/\n/\n',
         'ProjetBDdeclare.sql'
     ), ]
 res_folder = 'Rendu'
