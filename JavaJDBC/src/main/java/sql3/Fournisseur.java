@@ -10,19 +10,17 @@ public class Fournisseur implements SQLData {
     private String prenom;
     private Ref adresse;
     private Date naissance;
-    private Array catalogue;
 
     public Fournisseur(){
     }
 
-    public Fournisseur(String sql_type, int siret, String nom, String prenom, Ref adresse, Date naissance, Array catalogue) {
+    public Fournisseur(String sql_type, int siret, String nom, String prenom, Ref adresse, Date naissance) {
         this.sql_type = sql_type;
         this.siret = siret;
         this.nom = nom;
         this.prenom = prenom;
         this.adresse = adresse;
         this.naissance = naissance;
-        this.catalogue = catalogue;
     }
 
     public int getSiret() {
@@ -57,14 +55,6 @@ public class Fournisseur implements SQLData {
         this.naissance = naissance;
     }
 
-    public Array getCatalogue() {
-        return catalogue;
-    }
-
-    public void setCatalogue(Array catalogue) {
-        this.catalogue = catalogue;
-    }
-
     @Override
     public String getSQLTypeName() throws SQLException {
         return sql_type;
@@ -78,7 +68,6 @@ public class Fournisseur implements SQLData {
         this.prenom = stream.readString();
         this.adresse = stream.readRef();
         this.naissance = stream.readDate();
-        this.catalogue = (Array) stream.readArray();
     }
 
     @Override
@@ -88,7 +77,6 @@ public class Fournisseur implements SQLData {
         stream.writeString(prenom);
         stream.writeRef(adresse);
         stream.writeDate(naissance);
-        stream.writeArray(catalogue);
     }
 
     public void display() throws SQLException {
@@ -107,20 +95,8 @@ public class Fournisseur implements SQLData {
 
     public String displayInfoAdresseFournisseurFromRef() throws SQLException {
         Ref refAdresse1 = this.getAdresse();
-        Adresse adresse1 = (Adresse) refAdresse1.getObject();
+        Adresse adresse1 = (Adresse) refAdresse1.getObject(Main.getMapOraObjType());
         return adresse1.toString();
-    }
-
-    public void displayInfoAllCatalogue() throws SQLException {
-        // affichage des noms des cartes avec leur remise
-        Ref[] refCartes = (Ref[]) this.getCatalogue().getArray();
-        System.out.println("<Cartes:");
-        for (Ref refCarte : refCartes) {
-            Carte carte1 = (Carte) refCarte.getObject();
-            System.out.println(carte1.toString());
-
-        }
-        System.out.println(">");
     }
 
     @Override

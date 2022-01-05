@@ -124,9 +124,9 @@ public class Article implements SQLData {
     public void displayInfoAllLigneTicket() throws SQLException {
         //affichage des lignes des tickets
         Ref[] refLigneTickets = (Ref[]) this.getLigneTicketAvecThis().getArray();
-        System.out.println("<Lignes de tickets:");
+        System.out.println("<Lignes des tickets où est présent l'article:");
         for (Ref refLigneTicket : refLigneTickets) {
-            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject();
+            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject(Main.getMapOraObjType());
             System.out.println(lt1.toString());
 
         }

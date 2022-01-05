@@ -80,7 +80,7 @@ public class FactureRecue extends Ticket{
 
     public String displayInfoFournisseurFromRef() throws SQLException {
         Ref refFournisseur1 = this.getFournisseur();
-        Fournisseur fournisseur1 = (Fournisseur) refFournisseur1.getObject();
+        Fournisseur fournisseur1 = (Fournisseur) refFournisseur1.getObject(Main.getMapOraObjType());
         return fournisseur1.toString();
     }
 }

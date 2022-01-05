@@ -77,7 +77,7 @@ public class Carte implements SQLData {
         Ref[] refClients = (Ref[]) this.getListRefClients().getArray();
         System.out.println("<Clients:");
         for (Ref clientRef : refClients) {
-            Client client1 = (Client) clientRef.getObject();
+            Client client1 = (Client) clientRef.getObject(Main.getMapOraObjType());
             System.out.println("   [idClient" + client1.getId() + " nomClient=" + client1.getNom() + "]");
 
         }

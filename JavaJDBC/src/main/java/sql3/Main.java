@@ -43,8 +43,13 @@ public class Main {
 
             mapOraObjType = conn.getTypeMap();
 
+            //2 boucles indépendantes nécessaires car on doit construire en entier le dictionnaire avant de faire les requêtes
+            //car par exemple pour tester Article on doit connaître LigneTicket
             for (Types t: Types.values()) {
                 mapOraObjType.put(t.typePath, Class.forName("sql3." + t.className));
+            }
+
+            for (Types t: Types.values()) {
                 t.loop();
             }
 
@@ -55,12 +60,12 @@ public class Main {
 
     }
 
-    private enum Types{
+    public enum Types{
         ADRESSE, CARTE, CLIENT, EMPL, FOURNISSEUR, ARTICLE, LIGNETICKET, TICKET, FACTUREEMISE, FACTURERECUE;
         public final String className = Objects.equals(this.toString(), "LIGNETICKET") ? "LigneTicket" : this.toString().equals("FACTUREEMISE") ? "FactureEmise" : this.toString().equals("FACTURERECUE") ? "FactureRecue" : this.toString().charAt(0) + this.toString().substring(1).toLowerCase();
         public final String typePath = path2 + "." + this + "_T";
 
-        public void loop() throws SQLException, IOException {
+        public void loop() throws SQLException, IOException, ClassNotFoundException {
 
             String query = String.format("SELECT value(c) FROM %s_o c", this);
             if (this == FACTUREEMISE){
@@ -89,5 +94,9 @@ public class Main {
                     case FACTURERECUE -> ((FactureRecue) queryResult.getObject(1, mapOraObjType)).display();
                 }
         }
+    }
+
+    public static Map<String, Class<?>> getMapOraObjType() {
+        return mapOraObjType;
     }
 }

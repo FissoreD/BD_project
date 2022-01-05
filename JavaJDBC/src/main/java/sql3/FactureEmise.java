@@ -80,7 +80,7 @@ public class FactureEmise extends Ticket{
 
     public String displayInfoClientFromRef() throws SQLException {
         Ref refClient1 = this.getClient();
-        Client client1 = (Client) refClient1.getObject();
+        Client client1 = (Client) refClient1.getObject(Main.getMapOraObjType());
         return client1.toString();
     }
 }

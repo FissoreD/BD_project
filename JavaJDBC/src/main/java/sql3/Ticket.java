@@ -1,6 +1,8 @@
 package sql3;
 
 import java.sql.*;
+import java.util.Map;
+import java.util.Objects;
 
 public class Ticket implements SQLData {
 
@@ -111,7 +113,7 @@ public class Ticket implements SQLData {
 
     }
 
-    public void display() throws SQLException {
+    public void display() throws SQLException, ClassNotFoundException {
         System.out.printf(
                 """
                         
@@ -126,13 +128,13 @@ public class Ticket implements SQLData {
 
     public String displayInfoEmployeEmmetteurFromRef() throws SQLException {
         Ref refEmpl1 = this.getEmployeemmetteur();
-        Empl empl1 = (Empl) refEmpl1.getObject();
+        Empl empl1 = (Empl) refEmpl1.getObject(Main.getMapOraObjType());
         return empl1.toString();
     }
 
     public String displayInfoCarteReductionFromRef() throws SQLException {
         Ref refCarte1 = this.getCarte_reduction();
-        Carte carte1 = (Carte) refCarte1.getObject();
+        Carte carte1 = (Carte) refCarte1.getObject(Main.getMapOraObjType());
         return carte1.toString();
     }
 
@@ -141,7 +143,7 @@ public class Ticket implements SQLData {
         Ref[] refLigneTickets = (Ref[]) this.getLigneticket().getArray();
         System.out.println("<Lignes de tickets:");
         for (Ref refLigneTicket : refLigneTickets) {
-            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject();
+            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject(Main.getMapOraObjType());
             System.out.println(lt1.toString());
 
         }

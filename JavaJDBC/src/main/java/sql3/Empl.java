@@ -152,7 +152,7 @@ public class Empl implements SQLData {
 
     public String displayInfoAdresseEmplFromRef() throws SQLException {
         Ref refAdresse1 = this.getAdresse();
-        Adresse adresse1 = (Adresse) refAdresse1.getObject();
+        Adresse adresse1 = (Adresse) refAdresse1.getObject(Main.getMapOraObjType());
         return adresse1.toString();
     }
 

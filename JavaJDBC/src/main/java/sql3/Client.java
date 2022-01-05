@@ -116,7 +116,7 @@ public class Client implements SQLData {
 
     public String displayInfoAdresseClientFromRef() throws SQLException {
         Ref refAdresse1 = this.getRefAdresse();
-        Adresse adresse1 = (Adresse) refAdresse1.getObject();
+        Adresse adresse1 = (Adresse) refAdresse1.getObject(Main.getMapOraObjType());
         return adresse1.toString();
     }
 
@@ -124,7 +124,7 @@ public class Client implements SQLData {
         String carte_type = "Ce client n'a pas de carte";
         if (refCarte != null) {
             Ref refCarte1 = this.getRefCarte();
-            Carte carte1 = (Carte) refCarte1.getObject();
+            Carte carte1 = (Carte) refCarte1.getObject(Main.getMapOraObjType());
             carte_type = carte1.getNom();
         }
         return carte_type;
