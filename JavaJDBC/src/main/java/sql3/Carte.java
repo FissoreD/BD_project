@@ -73,12 +73,11 @@ public class Carte implements SQLData {
     }
 
     public void displayInfoAllClientsCarte() throws SQLException {
-        // affichage des prénoms
-        Ref[] lesRefDesEmployes = (Ref[]) this.getListRefClients().getArray();
-        //System.out.println("Prenoms = "+this.getPrenoms().stringValue());
+        // affichage du nom des clients
+        Ref[] refClients = (Ref[]) this.getListRefClients().getArray();
         System.out.println("<Clients:");
-        for (Ref lesRefDesEmploye : lesRefDesEmployes) {
-            Client client1 = (Client) lesRefDesEmploye.getObject();
+        for (Ref clientRef : refClients) {
+            Client client1 = (Client) clientRef.getObject();
             System.out.println("   [idClient" + client1.getId() + " nomClient=" + client1.getNom() + "]");
 
         }

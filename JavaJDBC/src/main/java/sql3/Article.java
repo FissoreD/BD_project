@@ -10,18 +10,18 @@ public class Article implements SQLData {
     private String nom;
     private float prix_achat;
     private float prix_vente;
-    private Ref achat;
+    private Array ligneTicketAvecThis;
 
     public Article(){}
 
-    public Article(String sql_type, int quantite, String codebarre, String nom, float prix_achat, float prix_vente, Ref achat) {
+    public Article(String sql_type, int quantite, String codebarre, String nom, float prix_achat, float prix_vente, Array ligneTicketAvecThis) {
         this.sql_type = sql_type;
         this.quantite = quantite;
         this.codebarre = codebarre;
         this.nom = nom;
         this.prix_achat = prix_achat;
         this.prix_vente = prix_vente;
-        this.achat = achat;
+        this.ligneTicketAvecThis = ligneTicketAvecThis;
     }
 
     public int getQuantite() {
@@ -64,12 +64,12 @@ public class Article implements SQLData {
         this.prix_vente = prix_vente;
     }
 
-    public Ref getAchat() {
-        return achat;
+    public Array getLigneTicketAvecThis() {
+        return ligneTicketAvecThis;
     }
 
-    public void setAchat(Ref achat) {
-        this.achat = achat;
+    public void setLigneTicketAvecThis(Array ligneTicketAvecThis) {
+        this.ligneTicketAvecThis = ligneTicketAvecThis;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Article implements SQLData {
         this.nom = stream.readString();
         this.prix_achat = stream.readFloat();
         this.prix_vente = stream.readFloat();
-        this.achat = stream.readRef();
+        this.ligneTicketAvecThis = stream.readArray();
 
     }
 
@@ -96,7 +96,7 @@ public class Article implements SQLData {
         stream.writeString(nom);
         stream.writeFloat(prix_achat);
         stream.writeFloat(prix_vente);
-        stream.writeRef(achat);
+        stream.writeArray(ligneTicketAvecThis);
     }
 
     public void display() throws SQLException {
@@ -121,9 +121,15 @@ public class Article implements SQLData {
                 '}';
     }
 
-    /*public String displayInfoFactureRecueFromRef() throws SQLException {
-        Ref refFacture1 = this.getAchat();
-        FactureRecue fr1 = (Adresse) refFacture1.getObject();
-        return fr.toString();
-    }*/
+    public void displayInfoAllLigneTicket() throws SQLException {
+        //affichage des lignes des tickets
+        Ref[] refLigneTickets = (Ref[]) this.getLigneTicketAvecThis().getArray();
+        System.out.println("<Lignes de tickets:");
+        for (Ref refLigneTicket : refLigneTickets) {
+            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject();
+            System.out.println(lt1.toString());
+
+        }
+        System.out.println(">");
+    }
 }

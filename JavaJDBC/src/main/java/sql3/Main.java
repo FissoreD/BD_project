@@ -36,7 +36,7 @@ public class Main {
                                   (SERVER = DEDICATED)\r
                                   (SERVICE_NAME = %s)\r
                                 )\r
-                              )""", adressIP2, numPort2, serviceName2),
+                              )""", adressIP, numPort, serviceName),
                     username2, password2);
 
             stmt = conn.createStatement();

@@ -97,4 +97,27 @@ public class LigneTicket implements SQLData {
         return ticket1.toString();
     }
 
+    /*
+    @Override
+    public String toString() {
+        String res = null;
+        try {
+            res = "LigneTicket{" +
+                    "numeroligne=" + numeroligne +
+                    ", quantite=" + quantite +
+                    ", parentTicketId=" + ((Ticket) parentTicket.getObject()).getId() +
+                    '}';
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }*/
+
+    @Override
+    public String toString() {
+        return "LigneTicket{" +
+                "numeroligne=" + numeroligne +
+                ", quantite=" + quantite +
+                '}';
+    }
 }

@@ -111,14 +111,13 @@ public class Fournisseur implements SQLData {
         return adresse1.toString();
     }
 
-    public void displayInfoAllClientsCarte() throws SQLException {
-        // affichage des prénoms
-        Ref[] lesRefDesEmployes = (Ref[]) this.getCatalogue().getArray();
-        //System.out.println("Prenoms = "+this.getPrenoms().stringValue());
-        System.out.println("<Clients:");
-        for (Ref lesRefDesEmploye : lesRefDesEmployes) {
-            Client client1 = (Client) lesRefDesEmploye.getObject();
-            System.out.println("   [idClient" + client1.getId() + " nomClient=" + client1.getNom() + "]");
+    public void displayInfoAllCatalogue() throws SQLException {
+        // affichage des noms des cartes avec leur remise
+        Ref[] refCartes = (Ref[]) this.getCatalogue().getArray();
+        System.out.println("<Cartes:");
+        for (Ref refCarte : refCartes) {
+            Carte carte1 = (Carte) refCarte.getObject();
+            System.out.println(carte1.toString());
 
         }
         System.out.println(">");

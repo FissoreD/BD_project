@@ -136,6 +136,18 @@ public class Ticket implements SQLData {
         return carte1.toString();
     }
 
+    public void displayInfoAllLigneTicket() throws SQLException {
+        //affichage des lignes de ticket
+        Ref[] refLigneTickets = (Ref[]) this.getLigneticket().getArray();
+        System.out.println("<Lignes de tickets:");
+        for (Ref refLigneTicket : refLigneTickets) {
+            LigneTicket lt1 = (LigneTicket) refLigneTicket.getObject();
+            System.out.println(lt1.toString());
+
+        }
+        System.out.println(">");
+    }
+
     @Override
     public String toString() {
         return "Ticket{" +
