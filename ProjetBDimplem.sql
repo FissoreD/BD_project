@@ -460,7 +460,7 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
         FROM
             ligneticket_o
         WHERE
-            deref(TREAT(deref(parentticket) AS facturerecue_t).fournisseur).siret = 1234;
+            deref(TREAT(deref(parentticket) AS facturerecue_t).fournisseur).siret = self.siret;
 
         RETURN x;
     END;

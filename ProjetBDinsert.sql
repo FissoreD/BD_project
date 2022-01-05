@@ -867,7 +867,7 @@ BEGIN
         fact_recue10ref
     ) RETURNING ref(lt) INTO ligne_ticket15;
 
-    article5.add_ligne_ticket(ligne_ticket15);
+    article15.add_ligne_ticket(ligne_ticket15);
     utl_ref.select_object(fact_recue10ref, fact_recue10);
     fact_recue10.addligneticket(ligne_ticket12);
     fact_recue10.addligneticket(ligne_ticket13);
