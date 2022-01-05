@@ -10,17 +10,18 @@ public class Fournisseur implements SQLData {
     private String prenom;
     private Ref adresse;
     private Date naissance;
+    private Array factureFourn;
 
-    public Fournisseur(){
-    }
+    public Fournisseur(){}
 
-    public Fournisseur(String sql_type, int siret, String nom, String prenom, Ref adresse, Date naissance) {
+    public Fournisseur(String sql_type, int siret, String nom, String prenom, Ref adresse, Date naissance, Array factureFourn) {
         this.sql_type = sql_type;
         this.siret = siret;
         this.nom = nom;
         this.prenom = prenom;
         this.adresse = adresse;
         this.naissance = naissance;
+        this.factureFourn = factureFourn;
     }
 
     public int getSiret() {
@@ -39,10 +40,6 @@ public class Fournisseur implements SQLData {
         return prenom;
     }
 
-    public Date getNaissance() {
-        return naissance;
-    }
-
     public Ref getAdresse() {
         return adresse;
     }
@@ -51,9 +48,17 @@ public class Fournisseur implements SQLData {
         this.adresse = adresse;
     }
 
+    public Date getNaissance() {
+        return naissance;
+    }
+
     public void setNaissance(Date naissance) {
         this.naissance = naissance;
     }
+
+    public Array getFactureFourn() { return factureFourn; }
+
+    public void setFactureFourn(Array factureFourn) { this.factureFourn = factureFourn; }
 
     @Override
     public String getSQLTypeName() throws SQLException {
@@ -68,6 +73,7 @@ public class Fournisseur implements SQLData {
         this.prenom = stream.readString();
         this.adresse = stream.readRef();
         this.naissance = stream.readDate();
+        this.factureFourn = stream.readArray();
     }
 
     @Override
@@ -77,6 +83,7 @@ public class Fournisseur implements SQLData {
         stream.writeString(prenom);
         stream.writeRef(adresse);
         stream.writeDate(naissance);
+        stream.writeArray(factureFourn);
     }
 
     public void display() throws SQLException {
@@ -97,6 +104,18 @@ public class Fournisseur implements SQLData {
         Ref refAdresse1 = this.getAdresse();
         Adresse adresse1 = (Adresse) refAdresse1.getObject(Main.getMapOraObjType());
         return adresse1.toString();
+    }
+
+    public void displayInfoAllFactures() throws SQLException {
+        // affichage des factures du fournisseurs
+        Ref[] refFacts = (Ref[]) this.getFactureFourn().getArray();
+        System.out.println("<Factures:");
+        for (Ref refFact : refFacts) {
+            FactureRecue fr1 = (FactureRecue) refFact.getObject(Main.getMapOraObjType());
+            System.out.println("   [idFacture=" + fr1.getId() + " dateEmmission=" + fr1.getDateemission() + " dateLimite=" + fr1.getDatelimite() + "]");
+
+        }
+        System.out.println(">");
     }
 
     @Override

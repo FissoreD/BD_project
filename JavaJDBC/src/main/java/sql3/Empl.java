@@ -16,10 +16,11 @@ public class Empl implements SQLData {
     private Date embauche;
     private float salaire;
     private Clob cv;
+    private Array ticketEmis;
 
     public Empl(){}
 
-    public Empl(String sql_type, int numsecu, String nom, String prenom, String job, Ref adresse, Date naissance, Date embauche, float salaire, Clob cv) {
+    public Empl(String sql_type, long numsecu, String nom, String prenom, String job, Ref adresse, Date naissance, Date embauche, float salaire, Clob cv, Array ticketEmis) {
         this.sql_type = sql_type;
         this.numsecu = numsecu;
         this.nom = nom;
@@ -30,13 +31,14 @@ public class Empl implements SQLData {
         this.embauche = embauche;
         this.salaire = salaire;
         this.cv = cv;
+        this.ticketEmis = ticketEmis;
     }
 
     public long getNumsecu() {
         return numsecu;
     }
 
-    public void setNumsecu(int numsecu) {
+    public void setNumsecu(long numsecu) {
         this.numsecu = numsecu;
     }
 
@@ -92,12 +94,24 @@ public class Empl implements SQLData {
         return salaire;
     }
 
+    public void setSalaire(float salaire) {
+        this.salaire = salaire;
+    }
+
     public Clob getCv() {
         return cv;
     }
 
     public void setCv(Clob cv) {
         this.cv = cv;
+    }
+
+    public Array getTicketEmis() {
+        return ticketEmis;
+    }
+
+    public void setTicketEmis(Array ticketEmis) {
+        this.ticketEmis = ticketEmis;
     }
 
     @Override
@@ -117,6 +131,7 @@ public class Empl implements SQLData {
         this.embauche = stream.readDate();
         this.salaire = stream.readFloat();
         this.cv = stream.readClob();
+        this.ticketEmis = stream.readArray();
     }
 
     @Override
@@ -130,6 +145,7 @@ public class Empl implements SQLData {
         stream.writeDate(embauche);
         stream.writeFloat(salaire);
         stream.writeClob(cv);
+        stream.writeArray(ticketEmis);
     }
 
     public void display() throws SQLException, IOException {
@@ -169,6 +185,18 @@ public class Empl implements SQLData {
         }
         sb.append("\n /CV>] \n");
         return sb.toString();
+    }
+
+    public void displayInfoAllTicketEmis() throws SQLException {
+        // affichage des tickets que l'employe a emis
+        Ref[] refTickets = (Ref[]) this.getTicketEmis().getArray();
+        System.out.println("<Tickets:");
+        for (Ref refTicket : refTickets) {
+            Ticket ticket1 = (Ticket) refTicket.getObject(Main.getMapOraObjType());
+            System.out.println(ticket1.toString());
+
+        }
+        System.out.println(">");
     }
 
     @Override

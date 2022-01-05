@@ -15,8 +15,7 @@ public class Adresse implements SQLData {
     private String rue;
     private int numero;
 
-    public Adresse() {
-    }
+    public Adresse() {}
 
     public Adresse(String sql_type, String pays, String ville, String codepostal, String rue, int numero) {
         this.sql_type = sql_type;
