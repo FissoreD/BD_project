@@ -461,6 +461,7 @@ CREATE TABLE ticket_o OF ticket_t (
     --possible d'avoir un ticket avc une table vide d'article
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),
     CONSTRAINT chk_ticket_o_paiement CHECK ( paiement IN ( 'espece', 'cb', 'cheque', 'autre' ) ),
+--    CONSTRAINT nnl_ticket_o_employeemmetteur CHECK ( employeemmetteur IS NOT NULL ),
     CONSTRAINT nnl_ticket_o_dateemission CHECK ( dateemission IS NOT NULL )
     --ajout des contraintes des factures emises
 --    CONSTRAINT nnl_factureemise_o_client CHECK ( TREAT(object_value AS factureemise_t).client IS NOT NULL ),
@@ -1143,7 +1144,7 @@ CREATE OR REPLACE TYPE BODY fournisseur_t AS
         FROM
             ligneticket_o
         WHERE
-            deref(TREAT(deref(parentticket) AS facturerecue_t).fournisseur).siret = 1234;
+            deref(TREAT(deref(parentticket) AS facturerecue_t).fournisseur).siret = self.siret;
 
         RETURN x;
     END;
@@ -2415,7 +2416,7 @@ BEGIN
         fact_recue10ref
     ) RETURNING ref(lt) INTO ligne_ticket15;
 
-    article5.add_ligne_ticket(ligne_ticket15);
+    article15.add_ligne_ticket(ligne_ticket15);
     utl_ref.select_object(fact_recue10ref, fact_recue10);
     fact_recue10.addligneticket(ligne_ticket12);
     fact_recue10.addligneticket(ligne_ticket13);
@@ -2738,12 +2739,6 @@ WHERE
     value(ot) IS OF ( facturerecue_t );
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
---SELECT *
---FROM
---         empl_o oe
---    INNER JOIN adresse_o oa ON oe.adresse = oa;
-
--- 5 requetes impliquant plus de 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
 
 -- Fournisseur dont les factures que nous avons recues ont ete toutes payees
 SELECT
@@ -2762,10 +2757,219 @@ FROM
                 WHERE
                     b.siret = 1234
             ) t
-    ) ON o.siret = ss
+    ) ON siret = ss
 WHERE
     ss IS NULL;
+    
+-- Client dont les factures que nous avons emises ont ete toutes payees
+SELECT
+    o.id AS id
+FROM
+    client_o o
+    LEFT JOIN (
+        SELECT
+            deref(TREAT(deref(t.column_value) AS factureemise_t).client).id AS id2
+        FROM
+            TABLE (
+                SELECT
+                    oc.get_factures_a_encaisser()
+                FROM
+                    client_o oc
+                WHERE
+                    oc.id = 2
+            ) t
+    ) ON id = id2
+WHERE
+    id2 IS NULL;
+    
+-- Informations employe emmetteur du ticket 11
+SELECT
+    ot.id,
+    oe.numsecu,
+    oe.nom,
+    oe.embauche
+FROM
+    ticket_o ot
+    LEFT JOIN empl_o   oe ON oe.numsecu = ot.employeemmetteur.numsecu
+WHERE
+    ot.id = 11;
 
+-- Liste tickets emis des employes trie par ordre ante-chronologique
+SELECT
+    oe.nom,
+    oe.prenom,
+    ot.id,
+    ot.dateemission
+FROM
+    empl_o   oe
+    LEFT JOIN ticket_o ot ON oe.numsecu = ot.employeemmetteur.numsecu
+WHERE
+    ot.id IS NOT NULL
+ORDER BY
+    ot.dateemission DESC;
+
+-- Pour chaque employe, la quantite total d'argent encaisser depuis son enregistrement
+-- (le total des totaux de chacun de ses tickets)
+-- on ne considere pas les employes n'ayant emis aucun ticket
+SELECT
+    oe.numsecu,
+    oe.nom,
+    SUM(ot2.total) AS total
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            o.employeemmetteur.numsecu n,
+            o.gettotal()               total
+        FROM
+            ticket_o o
+    ) ot2 ON oe.numsecu = ot2.n
+GROUP BY
+    oe.numsecu,
+    oe.nom;
+
+-- 5 requetes impliquant 3 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
+
+-- Le nom de l'article vendu avec l'id du ticket dans lequel il a ete enregistre associe a l'employe ayant
+-- scanne l'article (l'employe qui a remis le ticket)
+SELECT
+    oe.nom,
+    oe.prenom,
+    ticket_id,
+    nom_article
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.id                       AS ticket_id,
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n;
+
+-- Id des factures emises du client 1 sachant qu'il a la carte gold en utilisant 2 sous-jointures externes
+SELECT
+    tab1.id_client,
+    tab2.nom AS nom_carte,
+    tab1.id_facture
+FROM
+         (
+        SELECT
+            id_facture,
+            oc.id AS id_client
+        FROM
+            client_o oc
+            LEFT JOIN (
+                SELECT
+                    deref(TREAT(deref(tc.column_value) AS factureemise_t).client).id AS idss,
+                    TREAT(deref(tc.column_value) AS factureemise_t).id               AS id_facture
+                FROM
+                    TABLE (
+                        SELECT
+                            c.get_factures_a_encaisser()
+                        FROM
+                            client_o c
+                        WHERE
+                            c.id = 1
+                    ) tc
+            ) ON id = idss
+        WHERE
+            idss IS NOT NULL
+    ) tab1
+    INNER JOIN (
+        SELECT
+            id_client2,
+            o.nom AS nom
+        FROM
+            carte_o o
+            LEFT JOIN (
+                SELECT
+                    TREAT(deref(t.column_value) AS client_t).carte.nom AS ssnom,
+                    TREAT(deref(t.column_value) AS client_t).id        AS id_client2
+                FROM
+                    TABLE (
+                        SELECT
+                            car.clients
+                        FROM
+                            carte_o car
+                        WHERE
+                            car.nom = 'bronze'
+                    ) t
+            ) ON nom = ssnom
+        WHERE
+            ssnom IS NOT NULL
+    ) tab2 ON tab1.id_client = tab2.id_client2;
+
+-- Le nom de l'article associe au numero de securite social de celui qui l'a vendu et ce trie par nom d'article
+SELECT
+    oe.numsecu,
+    nom_article
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+ORDER BY
+    nom_article;
+
+-- Pour chaque employe, on calcule la moyenne (en pourcentage) de la proportion du cout d'un article dans le total du ticket
+-- dans lequel l'article est (on ne considère pas les employes n'ayant emis aucun ticket)
+SELECT
+    oe.numsecu,
+    oe.nom,
+    oe.prenom,
+    AVG(round(prix / total * 100, 2)) AS mean_total_percent_proportion
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.prix_vente       AS prix,
+            ot.gettotal()               AS total,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+GROUP BY
+    oe.numsecu,
+    oe.nom,
+    oe.prenom
+ORDER BY
+    mean_total_percent_proportion DESC;
+    
+-- Pour chaque employe, on calcule le benefice brut total à partir des tickets
+SELECT
+    oe.numsecu,
+    oe.nom,
+    oe.prenom,
+    nvl(SUM(prix - prix_fournisseur), 0) AS benefice_brut
+FROM
+    empl_o oe
+    LEFT JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.prix_vente       AS prix,
+            ol.article.prix_achat       AS prix_fournisseur,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+GROUP BY
+    oe.numsecu,
+    oe.nom,
+    oe.prenom
+ORDER BY
+    benefice_brut DESC;
+    
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
 
@@ -2914,7 +3118,8 @@ BEGIN
     
     --on supprime le ticket
     DELETE FROM ticket_o
-    WHERE id = 17;
+    WHERE
+        id = 17;
 
     --on regroupe les ligneticket n'ayant plus de ticket parent
     SELECT
@@ -2943,9 +3148,11 @@ BEGIN
 
         --on supprime la lignetick
         DELETE FROM ligneticket_o l
-        WHERE value(l) = ref_l_tick(i);
+        WHERE
+            value(l) = ref_l_tick(i);
+
     END LOOP;
-    
+
 END;
 /
 
@@ -2981,7 +3188,8 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS dangling;
+        TREAT(value(t) AS factureemise_t).client IS
+dangling;
 
 FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
     DELETE FROM ticket_o t
