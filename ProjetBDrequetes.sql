@@ -86,9 +86,30 @@ FROM
                 WHERE
                     b.siret = 1234
             ) t
-    ) ON o.siret = ss
+    ) ON siret = ss
 WHERE
     ss IS NULL;
+    
+-- Client dont les factures que nous avons emises ont ete toutes payees
+SELECT
+    o.id AS id
+FROM
+    client_o o
+    LEFT JOIN (
+        SELECT
+            deref(TREAT(deref(t.column_value) AS factureemise_t).client).id AS id2
+        FROM
+            TABLE (
+                SELECT
+                    oc.get_factures_a_encaisser()
+                FROM
+                    client_o oc
+                WHERE
+                    oc.id = 2
+            ) t
+    ) ON id = id2
+WHERE
+    id2 IS NULL;
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
