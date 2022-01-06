@@ -62,6 +62,7 @@ WHERE
     value(ot) IS OF ( facturerecue_t );
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
+
 -- Fournisseur dont les factures que nous avons recues ont ete toutes payees
 SELECT
     o.siret AS siret
@@ -106,32 +107,70 @@ WHERE
     
 -- Informations employe emmetteur du ticket 11
 SELECT
-    ot.id, oe.numsecu, oe.nom, oe.embauche
+    ot.id,
+    oe.numsecu,
+    oe.nom,
+    oe.embauche
 FROM
     ticket_o ot
-    LEFT JOIN empl_o oe
-    ON oe.numsecu = ot.employeemmetteur.numsecu
-where ot.id = 11;
+    LEFT JOIN empl_o   oe ON oe.numsecu = ot.employeemmetteur.numsecu
+WHERE
+    ot.id = 11;
 
 -- Liste tickets emis des employes trie par ordre ante-chronologique
 SELECT
-    oe.nom, oe.prenom, ot.id, ot.dateemission
+    oe.nom,
+    oe.prenom,
+    ot.id,
+    ot.dateemission
 FROM
     empl_o   oe
     LEFT JOIN ticket_o ot ON oe.numsecu = ot.employeemmetteur.numsecu
-WHERE ot.id is not null
-ORDER BY ot.dateemission desc;
+WHERE
+    ot.id IS NOT NULL
+ORDER BY
+    ot.dateemission DESC;
 
 -- Pour chaque employe, la quantite total d'argent encaisser depuis son enregistrement
 -- (le total des totaux de chacun de ses tickets)
 -- on ne considere pas les employes n'ayant emis aucun ticket
 SELECT
-    oe.numsecu, oe.nom, SUM(ot2.total) as total
+    oe.numsecu,
+    oe.nom,
+    SUM(ot2.total) AS total
 FROM
-    empl_o   oe
-    INNER JOIN (SELECT o.employeemmetteur.numsecu n, o.gettotal() total FROM ticket_o o) ot2
-    ON oe.numsecu = ot2.n
-GROUP BY oe.numsecu, oe.nom;
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            o.employeemmetteur.numsecu n,
+            o.gettotal()               total
+        FROM
+            ticket_o o
+    ) ot2 ON oe.numsecu = ot2.n
+GROUP BY
+    oe.numsecu,
+    oe.nom;
+
+-- 5 requetes impliquant 3 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
+
+-- Le nom de l'article vendu avec l'id du ticket dans lequel il a ete enregistre associe a l'employe ayant
+-- scanne l'article (l'employe qui a remis le ticket)
+SELECT
+    oe.nom,
+    oe.prenom,
+    ticket_id,
+    nom_article
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.id                       AS ticket_id,
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n;
 
 
 -- Requetes de mise a jour
