@@ -103,7 +103,15 @@ FROM
     ) ON id = id2
 WHERE
     id2 IS NULL;
-
+    
+-- Informations employe emmetteur du ticket 11
+SELECT
+    ot.id, oe.numsecu, oe.nom, oe.embauche
+FROM
+    ticket_o ot
+    LEFT JOIN empl_o oe
+    ON oe.numsecu = ot.employeemmetteur.numsecu
+where ot.id = 11;
 
 -- Liste tickets emis des employes trie par ordre ante-chronologique
 SELECT
@@ -116,7 +124,7 @@ ORDER BY ot.dateemission desc;
 
 -- Pour chaque employe, la quantite total d'argent encaisser depuis son enregistrement
 -- (le total des totaux de chacun de ses tickets)
--- on ne considere pas les employe n'ayant emis aucun ticket
+-- on ne considere pas les employes n'ayant emis aucun ticket
 SELECT
     oe.numsecu, oe.nom, SUM(ot2.total) as total
 FROM
