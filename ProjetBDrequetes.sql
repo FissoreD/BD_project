@@ -62,13 +62,6 @@ WHERE
     value(ot) IS OF ( facturerecue_t );
 
 -- 5 requetes impliquant 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
---SELECT *
---FROM
---         empl_o oe
---    INNER JOIN adresse_o oa ON oe.adresse = oa;
-
--- 5 requetes impliquant plus de 2 tables avec jointures internes dont 1 externe + 1 group by + 1 tri
-
 -- Fournisseur dont les factures que nous avons recues ont ete toutes payees
 SELECT
     o.siret AS siret
@@ -110,6 +103,28 @@ FROM
     ) ON id = id2
 WHERE
     id2 IS NULL;
+
+
+-- Liste tickets emis des employes trie par ordre ante-chronologique
+SELECT
+    oe.nom, oe.prenom, ot.id, ot.dateemission
+FROM
+    empl_o   oe
+    LEFT JOIN ticket_o ot ON oe.numsecu = ot.employeemmetteur.numsecu
+WHERE ot.id is not null
+ORDER BY ot.dateemission desc;
+
+-- Pour chaque employe, la quantite total d'argent encaisser depuis son enregistrement
+-- (le total des totaux de chacun de ses tickets)
+-- on ne considere pas les employe n'ayant emis aucun ticket
+SELECT
+    oe.numsecu, oe.nom, SUM(ot2.total) as total
+FROM
+    empl_o   oe
+    INNER JOIN (SELECT o.employeemmetteur.numsecu n, o.gettotal() total FROM ticket_o o) ot2
+    ON oe.numsecu = ot2.n
+GROUP BY oe.numsecu, oe.nom;
+
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
@@ -259,7 +274,8 @@ BEGIN
     
     --on supprime le ticket
     DELETE FROM ticket_o
-    WHERE id = 17;
+    WHERE
+        id = 17;
 
     --on regroupe les ligneticket n'ayant plus de ticket parent
     SELECT
@@ -288,9 +304,11 @@ BEGIN
 
         --on supprime la lignetick
         DELETE FROM ligneticket_o l
-        WHERE value(l) = ref_l_tick(i);
+        WHERE
+            value(l) = ref_l_tick(i);
+
     END LOOP;
-    
+
 END;
 /
 
@@ -326,7 +344,8 @@ BEGIN
     FROM
         ticket_o t
     WHERE
-        TREAT(value(t) AS factureemise_t).client IS dangling;
+        TREAT(value(t) AS factureemise_t).client IS
+dangling;
 
 FOR i IN ref_fact_e.first..ref_fact_e.last LOOP
     DELETE FROM ticket_o t
