@@ -172,6 +172,58 @@ FROM
             INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
     ) ON oe.numsecu = n;
 
+-- Id des factures emises du client 1 sachant qu'il a la carte gold en utilisant une jointure externe
+SELECT
+    tab1.id_client,
+    tab2.nom AS nom_carte,
+    tab1.id_facture
+FROM
+         (
+        SELECT
+            id_facture,
+            oc.id AS id_client
+        FROM
+            client_o oc
+            LEFT JOIN (
+                SELECT
+                    deref(TREAT(deref(tc.column_value) AS factureemise_t).client).id AS idss,
+                    TREAT(deref(tc.column_value) AS factureemise_t).id               AS id_facture
+                FROM
+                    TABLE (
+                        SELECT
+                            c.get_factures_a_encaisser()
+                        FROM
+                            client_o c
+                        WHERE
+                            c.id = 1
+                    ) tc
+            ) ON id = idss
+        WHERE
+            idss IS NOT NULL
+    ) tab1
+    INNER JOIN (
+        SELECT
+            id_client2,
+            o.nom AS nom
+        FROM
+            carte_o o
+            LEFT JOIN (
+                SELECT
+                    TREAT(deref(t.column_value) AS client_t).carte.nom AS ssnom,
+                    TREAT(deref(t.column_value) AS client_t).id        AS id_client2
+                FROM
+                    TABLE (
+                        SELECT
+                            car.clients
+                        FROM
+                            carte_o car
+                        WHERE
+                            car.nom = 'bronze'
+                    ) t
+            ) ON nom = ssnom
+        WHERE
+            ssnom IS NOT NULL
+    ) tab2 ON tab1.id_client = tab2.id_client2;
 
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
