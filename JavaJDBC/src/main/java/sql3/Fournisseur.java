@@ -107,7 +107,7 @@ public class Fournisseur implements SQLData {
     }
 
     public void displayInfoAllFactures() throws SQLException {
-        // affichage des factures du fournisseurs
+        // affichage des factures du fournisseur
         Ref[] refFacts = (Ref[]) this.getFactureFourn().getArray();
         System.out.println("<Factures:");
         for (Ref refFact : refFacts) {

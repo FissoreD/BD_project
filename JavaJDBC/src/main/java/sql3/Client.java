@@ -11,10 +11,11 @@ public class Client implements SQLData {
     private Ref refAdresse;
     private Date naissance;
     private Ref refCarte;
+    private Array factureClient;
 
     public Client(){}
 
-    public Client(String sql_type, int id, String nom, String prenom, Ref refAdresse, Date naissance, Ref refCarte){
+    public Client(String sql_type, int id, String nom, String prenom, Ref refAdresse, Date naissance, Ref refCarte, Array factureClient){
         this.sql_type = sql_type;
         this.id = id;
         this.nom = nom;
@@ -22,6 +23,7 @@ public class Client implements SQLData {
         this.refAdresse = refAdresse;
         this.naissance = naissance;
         this.refCarte = refCarte;
+        this.factureClient = factureClient;
     }
     @Override
     public String getSQLTypeName() throws SQLException {
@@ -76,6 +78,10 @@ public class Client implements SQLData {
         this.refCarte = refCarte;
     }
 
+    public Array getFactureClient() { return factureClient; }
+
+    public void setFactureClient(Array factureClient) { this.factureClient = factureClient; }
+
     @Override
     public void readSQL(SQLInput stream, String typeName) throws SQLException {
         this.sql_type = typeName;
@@ -85,6 +91,7 @@ public class Client implements SQLData {
         setRefAdresse((Ref) stream.readRef());
         this.naissance = stream.readDate();
         setRefCarte((Ref) stream.readRef());
+        this.factureClient = stream.readArray();
 
     }
 
@@ -96,6 +103,7 @@ public class Client implements SQLData {
         stream.writeRef(refAdresse);
         stream.writeDate(naissance);
         stream.writeRef(refCarte);
+        stream.writeArray(factureClient);
 
     }
 
@@ -128,6 +136,18 @@ public class Client implements SQLData {
             carte_type = carte1.getNom();
         }
         return carte_type;
+    }
+
+    public void displayInfoAllFactures() throws SQLException {
+        // affichage des factures du client
+        Ref[] refFacts = (Ref[]) this.getFactureClient().getArray();
+        System.out.println("<Factures:");
+        for (Ref refFact : refFacts) {
+            FactureEmise fr1 = (FactureEmise) refFact.getObject(Main.getMapOraObjType());
+            System.out.println("   [idFacture=" + fr1.getId() + " dateEmmission=" + fr1.getDateemission() + " dateLimite=" + fr1.getDatelimite() + "]");
+
+        }
+        System.out.println(">");
     }
 
     @Override
