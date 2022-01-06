@@ -172,7 +172,7 @@ FROM
             INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
     ) ON oe.numsecu = n;
 
--- Id des factures emises du client 1 sachant qu'il a la carte gold en utilisant une jointure externe
+-- Id des factures emises du client 1 sachant qu'il a la carte gold en utilisant 2 sous-jointures externes
 SELECT
     tab1.id_client,
     tab2.nom AS nom_carte,
@@ -225,6 +225,74 @@ FROM
             ssnom IS NOT NULL
     ) tab2 ON tab1.id_client = tab2.id_client2;
 
+-- Le nom de l'article associe au numero de securite social de celui qui l'a vendu et ce trie par nom d'article
+SELECT
+    oe.numsecu,
+    nom_article
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+ORDER BY
+    nom_article;
+
+-- Pour chaque employe, on calcule la moyenne (en pourcentage) de la proportion du cout d'un article dans le total du ticket
+-- dans lequel l'article est (on ne considère pas les employes n'ayant emis aucun ticket)
+SELECT
+    oe.numsecu,
+    oe.nom,
+    oe.prenom,
+    AVG(round(prix / total * 100, 2)) AS mean_total_percent_proportion
+FROM
+         empl_o oe
+    INNER JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.prix_vente       AS prix,
+            ot.gettotal()               AS total,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+GROUP BY
+    oe.numsecu,
+    oe.nom,
+    oe.prenom
+ORDER BY
+    mean_total_percent_proportion DESC;
+    
+-- Pour chaque employe, on calcule le benefice brut total à partir des tickets
+SELECT
+    oe.numsecu,
+    oe.nom,
+    oe.prenom,
+    nvl(SUM(prix - prix_fournisseur), 0) AS benefice_brut
+FROM
+    empl_o oe
+    LEFT JOIN (
+        SELECT
+            ot.employeemmetteur.numsecu AS n,
+            ol.article.prix_vente       AS prix,
+            ol.article.prix_achat       AS prix_fournisseur,
+            ol.article.nom              AS nom_article
+        FROM
+                 ticket_o ot
+            INNER JOIN ligneticket_o ol ON ot.id = ol.parentticket.id
+    ) ON oe.numsecu = n
+GROUP BY
+    oe.numsecu,
+    oe.nom,
+    oe.prenom
+ORDER BY
+    benefice_brut DESC;
+    
 -- Requetes de mise a jour
 -- 2 requetes impliquant 1 table
 
