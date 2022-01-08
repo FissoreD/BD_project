@@ -316,7 +316,7 @@ WHERE
 
 -- 2 requetes impliquant 2 tables
 
-    -- les employï¿½s qui n'habitent pas ï¿½ Nice recoivent
+    -- les employes qui n'habitent pas a Nice recoivent
     -- 10 euro de salaire en plus pour payer l'essance
 UPDATE empl_o
 SET
@@ -324,7 +324,7 @@ SET
 WHERE
     deref(adresse).ville != 'Nice';
 
-    -- les employï¿½s qui ont ï¿½mis plus de 500 euro de ticket,
+    -- les employes qui ont emis plus de 500 euro de ticket,
     -- recoivent un bonus de 50 euro dans leur salaire
 UPDATE empl_o
 SET
@@ -361,7 +361,7 @@ WHERE
             ) lre
     );
     
-    -- tous les articles prï¿½sents dans la facture d'achat 1
+    -- tous les articles presents dans la facture d'achat 1
     -- subissent une reduction du prix de vente du 5%
 UPDATE article_o art
 SET
@@ -425,7 +425,7 @@ DECLARE
     employe         empl_t;
     ticket_id       NUMBER := 17;
 BEGIN
-    --on met à jour ticket_emis dans l'employe concerne par ce ticket
+    --on met a jour ticket_emis dans l'employe concerne par ce ticket
     SELECT
         deref(t.employeemmetteur),
         ref(t)
@@ -480,7 +480,7 @@ END;
 /
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
--- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
+-- 1. on met a jour donc listrefclients_t dans la carte du client 1
 -- 2. on supprime les factures emises sur ce client
 -- (Attention au trigger delete_facture_checker car on ne peut pas supprimer des factures de moins de 10 ans)
 DECLARE

@@ -87,7 +87,6 @@ CREATE OR REPLACE TYPE adresse_t AS OBJECT (
     MAP MEMBER FUNCTION compadresse RETURN VARCHAR2
 );
 /
-/**/
 
 CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
     numeroligne  NUMBER,

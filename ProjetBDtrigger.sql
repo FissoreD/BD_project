@@ -1,3 +1,9 @@
+/*
+    Trigger qui met a jour la quantité dans le stock d'un article quand on 
+    écrit un ligneticket_o. 
+    Si la quantité passe en négatif (on vend plus de ce qu'on possede) alors 
+    le trigger lève une exception.
+*/
 CREATE OR REPLACE TRIGGER update_stock_quantity BEFORE
     INSERT OR UPDATE ON ligneticket_o
     FOR EACH ROW
@@ -71,6 +77,7 @@ BEGIN
 
 END;
 /
+
 -- on peut supprimer un client que s'il ne possède pas de facture de moins de 10 ans
 CREATE OR REPLACE TRIGGER delete_facture_checker BEFORE
     DELETE ON ticket_o
@@ -91,6 +98,10 @@ BEGIN
 
 END;
 /
+
+/*
+    L'employe ne doit pas etre nul dans le cas d'un ticket de vente
+*/
 CREATE OR REPLACE TRIGGER check_ticket_employe AFTER
     INSERT OR UPDATE ON ticket_o
     FOR EACH ROW

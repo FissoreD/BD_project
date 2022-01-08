@@ -91,7 +91,6 @@ CREATE OR REPLACE TYPE adresse_t AS OBJECT (
     MAP MEMBER FUNCTION compadresse RETURN VARCHAR2
 );
 /
-/**/
 
 CREATE OR REPLACE TYPE ligneticket_t AS OBJECT (
     numeroligne  NUMBER,
@@ -458,22 +457,9 @@ CREATE TABLE ticket_o OF ticket_t (
     CONSTRAINT pk_ticket_o_id PRIMARY KEY ( id ),
     CONSTRAINT chk_ticket_o_estvente CHECK ( estvente IN ( 0, 1 ) ),
     CONSTRAINT nnl_ticket_o_ligneticket CHECK ( ligneticket IS NOT NULL ),
-    --possible d'avoir un ticket avc une table vide d'article
     CONSTRAINT nnl_ticket_o_paiement CHECK ( paiement IS NOT NULL ),
     CONSTRAINT chk_ticket_o_paiement CHECK ( paiement IN ( 'espece', 'cb', 'cheque', 'autre' ) ),
---    CONSTRAINT nnl_ticket_o_employeemmetteur CHECK ( employeemmetteur IS NOT NULL ),
     CONSTRAINT nnl_ticket_o_dateemission CHECK ( dateemission IS NOT NULL )
-    --ajout des contraintes des factures emises
---    CONSTRAINT nnl_factureemise_o_client CHECK ( TREAT(object_value AS factureemise_t).client IS NOT NULL ),
---    CONSTRAINT nnl_factureemise_o_datelimite CHECK ( TREAT(object_value AS factureemise_t).datelimite IS NOT NULL ),
---    CONSTRAINT nnl_factureemise_o_payeounon CHECK ( TREAT(object_value AS factureemise_t).payeounon IS NOT NULL ),
---    CONSTRAINT chk_factureemise_o_payeounon CHECK ( TREAT(object_value AS factureemise_t).payeounon IN ( 0, 1 ) ),
-    
-    --ajout des contraintes des factures recues
---    CONSTRAINT nnl_facturerecue_o_client CHECK ( TREAT(object_value AS facturerecue_t).fournisseur IS NOT NULL ),
---    CONSTRAINT nnl_facturerecue_o_datelimite CHECK ( TREAT(object_value AS facturerecue_t).datelimite IS NOT NULL ),
---    CONSTRAINT nnl_facturerecue_o_payeounon CHECK ( TREAT(object_value AS facturerecue_t).payeounon IS NOT NULL ),
---    CONSTRAINT chk_facturerecue_o_payeounon CHECK ( TREAT(object_value AS facturerecue_t).payeounon IN ( 0, 1 ) )
 )
 NESTED TABLE ligneticket STORE AS tablelistrefticketarticles;
 /
@@ -527,17 +513,6 @@ ALTER TABLE ticket_o ADD (SCOPE FOR ( carte_reduction ) IS carte_o);
 CREATE INDEX idx_ticket_o_carte_reduction
 ON ticket_o(carte_reduction);
 
---factureemise_o et facture recue_o n'existe pas! :(
-
-/*ALTER TABLE factureemise_o ADD (SCOPE FOR ( client ) IS client_o);
-CREATE INDEX idx_factureemise_o_client
-ON factureemise_o(client);
-
-ALTER TABLE facturerecue_o ADD (SCOPE FOR ( fournisseur ) IS fournisseur_o);
-CREATE INDEX idx_facturerecue_o_fournisseur
-ON facturerecue_o(fournisseur);*/
-
-
 ALTER TABLE client_o ADD (SCOPE FOR ( adresse ) IS adresse_o);
 CREATE INDEX client_o_adresse
 ON client_o(adresse);
@@ -570,6 +545,12 @@ ON listref_facture_avec_this (nested_table_id, column_value);
 	2.X LES TRIGGERS
 */
 /
+/*
+    Trigger qui met a jour la quantit� dans le stock d'un article quand on 
+    �crit un ligneticket_o. 
+    Si la quantit� passe en n�gatif (on vend plus de ce qu'on possede) alors 
+    le trigger l�ve une exception.
+*/
 CREATE OR REPLACE TRIGGER update_stock_quantity BEFORE
     INSERT OR UPDATE ON ligneticket_o
     FOR EACH ROW
@@ -643,6 +624,7 @@ BEGIN
 
 END;
 /
+
 -- on peut supprimer un client que s'il ne poss�de pas de facture de moins de 10 ans
 CREATE OR REPLACE TRIGGER delete_facture_checker BEFORE
     DELETE ON ticket_o
@@ -663,6 +645,10 @@ BEGIN
 
 END;
 /
+
+/*
+    L'employe ne doit pas etre nul dans le cas d'un ticket de vente
+*/
 CREATE OR REPLACE TRIGGER check_ticket_employe AFTER
     INSERT OR UPDATE ON ticket_o
     FOR EACH ROW
@@ -1567,6 +1553,12 @@ DELETE FROM carte_o;
 
 ALTER TABLE ticket_o ENABLE ALL TRIGGERS;
 
+/*
+    Block d�clare pour l'ajout des lignes dans les tables.
+    Il y en a une dizaine environ par table et on met � jour les
+    listref via les methodes de gestion des liens definies dans
+    les body des tables
+*/
 DECLARE
     ad1             REF adresse_t;
     ad2             REF adresse_t;
@@ -2993,7 +2985,7 @@ WHERE
 
 -- 2 requetes impliquant 2 tables
 
-    -- les employï¿½s qui n'habitent pas ï¿½ Nice recoivent
+    -- les employes qui n'habitent pas a Nice recoivent
     -- 10 euro de salaire en plus pour payer l'essance
 UPDATE empl_o
 SET
@@ -3001,7 +2993,7 @@ SET
 WHERE
     deref(adresse).ville != 'Nice';
 
-    -- les employï¿½s qui ont ï¿½mis plus de 500 euro de ticket,
+    -- les employes qui ont emis plus de 500 euro de ticket,
     -- recoivent un bonus de 50 euro dans leur salaire
 UPDATE empl_o
 SET
@@ -3038,7 +3030,7 @@ WHERE
             ) lre
     );
     
-    -- tous les articles prï¿½sents dans la facture d'achat 1
+    -- tous les articles presents dans la facture d'achat 1
     -- subissent une reduction du prix de vente du 5%
 UPDATE article_o art
 SET
@@ -3102,7 +3094,7 @@ DECLARE
     employe         empl_t;
     ticket_id       NUMBER := 17;
 BEGIN
-    --on met à jour ticket_emis dans l'employe concerne par ce ticket
+    --on met a jour ticket_emis dans l'employe concerne par ce ticket
     SELECT
         deref(t.employeemmetteur),
         ref(t)
@@ -3157,7 +3149,7 @@ END;
 /
 
 -- on supprime le client 1 qui a une carte et sur lequel on a emis une facture
--- 1. on met ï¿½ jour donc listrefclients_t dans la carte du client 1
+-- 1. on met a jour donc listrefclients_t dans la carte du client 1
 -- 2. on supprime les factures emises sur ce client
 -- (Attention au trigger delete_facture_checker car on ne peut pas supprimer des factures de moins de 10 ans)
 DECLARE

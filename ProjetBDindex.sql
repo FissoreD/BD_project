@@ -44,17 +44,6 @@ ALTER TABLE ticket_o ADD (SCOPE FOR ( carte_reduction ) IS carte_o);
 CREATE INDEX idx_ticket_o_carte_reduction
 ON ticket_o(carte_reduction);
 
---factureemise_o et facture recue_o n'existe pas! :(
-
-/*ALTER TABLE factureemise_o ADD (SCOPE FOR ( client ) IS client_o);
-CREATE INDEX idx_factureemise_o_client
-ON factureemise_o(client);
-
-ALTER TABLE facturerecue_o ADD (SCOPE FOR ( fournisseur ) IS fournisseur_o);
-CREATE INDEX idx_facturerecue_o_fournisseur
-ON facturerecue_o(fournisseur);*/
-
-
 ALTER TABLE client_o ADD (SCOPE FOR ( adresse ) IS adresse_o);
 CREATE INDEX client_o_adresse
 ON client_o(adresse);

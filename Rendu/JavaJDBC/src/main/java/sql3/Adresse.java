@@ -2,10 +2,6 @@ package sql3;
 
 import java.sql.*;
 
-/**
- *
- * @author mondi
- */
 public class Adresse implements SQLData {
 
     private String sql_type;

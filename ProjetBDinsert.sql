@@ -18,6 +18,12 @@ DELETE FROM carte_o;
 
 ALTER TABLE ticket_o ENABLE ALL TRIGGERS;
 
+/*
+    Block déclare pour l'ajout des lignes dans les tables.
+    Il y en a une dizaine environ par table et on met à jour les
+    listref via les methodes de gestion des liens definies dans
+    les body des tables
+*/
 DECLARE
     ad1             REF adresse_t;
     ad2             REF adresse_t;
